@@ -1,0 +1,323 @@
+﻿@using System.IO;
+@inject IFileReaderService fileReaderService;
+@inject SessionStorage sessionStorage;
+@inject LocalStorage localStorage;
+@page "/shortcuts"
+@*<h1>Hello, dropped files!</h1>
+
+    Welcome to your new filestreaming app.
+    <br />
+    This demo reads files that was dropped in without doing anything particular with it.
+    <br />
+    <br />*@
+<style>
+    .@dropTargetClass {
+        display:block;
+        padding: 20px;
+        margin-bottom: 10px;
+        border: 1px dashed black;
+        border-radius: 5px;
+    }
+    .@dropTargetDragClass {
+        border-color: orangered;
+        font-weight: bold;
+    }
+</style>
+
+<div class="@DropClass"
+     @ref=dropTargetElement
+     @ondrop=OnDrop
+     @ondragenter=OnDragEnter
+     @ondragleave=OnDragLeave>
+    Drop Files here.
+    @foreach (var fileInfo in FileList)
+    {
+        <br />@fileInfo.Name
+    }
+</div>
+@*<input id="additive" type="checkbox" value=@Additive @onchange="OnAdditiveChange" />
+    <label for="additive">Additive</label>*@
+<br />
+<button @onclick="ReadFile" class="btn btn-primary">Read file</button>
+<button @onclick="ClearFile" class="btn btn-primary">Clear</button>
+
+<br />
+<br />
+
+<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
+
+@if (bindings != null)
+{
+    <div class="row">
+
+        @foreach (string key in bindings.Keys)
+        {
+            <article class="col-12 col-sm-6 col-md-4 key-group">
+                <h3 class="shortcut-key" data-toggle="collapse" data-target="#@key.Replace(' ', '-')">@key</h3>
+                <dl id="@key.Replace(' ', '-')" class="collapse shortcuts">
+                    @foreach (Binding binding in bindings[key])
+                    {
+                        <dt>@binding.DisplayName</dt>
+                        foreach (string shortcut in binding.Shortcuts)
+                        {
+                            <dd class="shortcut">@shortcut</dd>
+                        }
+                    }
+                </dl>
+            </article>
+        }
+    </div>
+}
+
+@code {
+
+    public string key = "bindings";
+    protected override async Task OnInitializedAsync()
+    {
+        //await sessionStorage.SetItem<Binding[]>(key, bindings);
+        //await localStorage.SetItem<string>(key, "jesse was here");
+        //var fromLocal = await localStorage.GetItem<string>(key);
+
+        //Output += fromLocal;
+        //this.StateHasChanged();
+
+        //await sessionStorage.SetItem<Binding[]>(key, bindings);
+        //await localStorage.SetItem<Binding[]>(key, bindings);
+        //bindings = await sessionStorage.GetItem<Dictionary<string, List<Binding>>>(key);
+
+        //var file = await sessionStorage.GetItem<IFileReference>(key);
+
+        //if (file != null)
+        //{
+        //    using (var fs = await file.OpenReadAsync())
+        //    {
+        //        Output += $"Reading file...\n";
+
+        //        this.StateHasChanged();
+
+        //        bindings = await GenerateList(fs);
+
+        //        Output += $"Didnt actually read the file\n";
+        //    }
+        //    //var fromLocal = await localStorage.GetItem<Binding[]>(key);
+        //}
+    }
+
+
+    ElementReference dropTargetElement;
+    IFileReaderRef dropReference;
+    bool Additive { get; set; }
+
+    const string dropTargetDragClass = "droptarget-drag";
+    const string dropTargetClass = "droptarget";
+
+    public Dictionary<string, List<Binding>> bindings = null;
+
+    private List<string> _dropClasses = new List<string>() { dropTargetClass };
+
+    string DropClass => string.Join(" ", _dropClasses);
+    string Output { get; set; }
+    List<IFileInfo> FileList { get; } = new List<IFileInfo>();
+
+    protected override async Task OnAfterRenderAsync(bool isFirstRender)
+    {
+        if (isFirstRender)
+        {
+            dropReference = fileReaderService.CreateReference(dropTargetElement);
+            await dropReference.RegisterDropEventsAsync();
+        }
+    }
+
+    public async Task OnAdditiveChange(ChangeEventArgs e)
+    {
+        Additive = (bool)e.Value;
+        await dropReference.UnregisterDropEventsAsync();
+        await dropReference.RegisterDropEventsAsync(Additive);
+    }
+
+    public async Task ClearFile()
+    {
+        await dropReference.ClearValue();
+        await this.RefreshFileList();
+    }
+
+    public void OnDragEnter(EventArgs e)
+    {
+        _dropClasses.Add(dropTargetDragClass);
+    }
+
+    public void OnDragLeave(EventArgs e)
+    {
+        _dropClasses.Remove(dropTargetDragClass);
+    }
+
+    public async Task OnDrop(EventArgs e)
+    {
+        Output += "Dropped a file.";
+        _dropClasses.Remove(dropTargetDragClass);
+        this.StateHasChanged();
+        await this.RefreshFileList();
+    }
+
+    private async Task RefreshFileList()
+    {
+        this.FileList.Clear();
+        foreach (var file in await dropReference.EnumerateFilesAsync())
+        {
+            var fileInfo = await file.ReadFileInfoAsync();
+            this.FileList.Add(fileInfo);
+        }
+        this.StateHasChanged();
+    }
+
+    public async Task ReadFile()
+    {
+        Output = string.Empty;
+        this.StateHasChanged();
+        var nl = Environment.NewLine;
+        foreach (var file in await dropReference.EnumerateFilesAsync())
+        {
+            var fileInfo = await file.ReadFileInfoAsync();
+            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
+            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
+            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
+            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
+            Output += $"Reading file...";
+            this.StateHasChanged();
+
+            //var result = Commands.GenerateList(file);
+
+            await localStorage.SetItem<IFileReference>(key, file);
+
+            using (var fs = await file.OpenReadAsync())
+            {
+                Output += $"Reading file...{nl}";
+
+                this.StateHasChanged();
+
+                //bindings = await GenerateList(fs);
+
+                Output += $"Didnt actually read the file{nl}";
+            }
+
+            //using (var fs = await file.OpenReadAsync())
+            //{
+            //    var bufferSize = 4096;
+            //    var buffer = new byte[bufferSize];
+            //    int count;
+            //    while ((count = await fs.ReadAsync(buffer, 0, buffer.Length)) != 0)
+            //    {
+            //        Output += $"Read {count} bytes. {fs.Position} / {fs.Length}{nl}";
+            //        this.StateHasChanged();
+            //    }
+
+            //}
+            this.StateHasChanged();
+        }
+
+    }
+
+    //public class Commands
+    //{
+    public static int ShortcutCount = 0;
+
+    public async Task<Dictionary<string, List<Binding>>> GenerateList(Stream file)
+    {
+        ShortcutCount = 0;
+
+        //var UrlString = @"P:\Users\jesse\AppData\2019.xml";
+
+        Dictionary<string, List<Binding>> dic = new Dictionary<string, List<Binding>>();
+        //XmlDocument doc = XmlDocument.Load(HostingEnvironment.MapPath(UrlString));
+
+        Output += $"Reading...";
+        this.StateHasChanged();
+
+        //var reader = new XmlTextReader();
+
+
+        XmlTextReader reader = new XmlTextReader(file);
+
+        while (await reader.ReadAsync())
+        {
+            var name = reader.GetAttribute("name");
+            var shortcut = reader.GetAttribute("shortcut");
+
+            if (string.IsNullOrEmpty(name))
+                continue;
+
+
+            Binding prev = new Binding();
+
+            //foreach (XmlElement node in doc.Descendants("command"))
+            //{
+            //string name = node.Attribute("name").Value;
+            //string shortcut = node.Attribute("shortcut").Value;
+
+            Binding binding = prev.FullName == name ? prev : CreateBinding(dic, name, shortcut);
+
+            if (!binding.Shortcuts.Contains(shortcut))
+                prev.Shortcuts.Add(shortcut);
+
+            prev = binding;
+            ShortcutCount += 1;
+        }
+
+        return dic;
+    }
+
+    private static Binding CreateBinding(Dictionary<string, List<Binding>> dic, string name, string shortcut)
+    {
+        int index = name.IndexOf('.');
+        string displayName = index > 0 ? name.Substring(name.LastIndexOf('.') + 1) : name;
+        string prefix = index > 0 ? CleanName(name.Substring(0, index)) : "Misc";
+        Binding binding = new Binding(name, CleanName(displayName), shortcut);
+
+        if (!dic.ContainsKey(prefix))
+            dic[prefix] = new List<Binding>();
+
+        dic[prefix].Add(binding);
+
+        return binding;
+    }
+
+    public static string CleanName(string name)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(name[0]);
+
+        for (int i = 1; i < name.Length; i++)
+        {
+            char c = name[i];
+
+            if (char.IsUpper(c) && !char.IsUpper(name[i - 1]))
+            {
+                sb.Append(" ");
+            }
+
+            sb.Append(c);
+        }
+
+        return sb.ToString();
+    }
+    @*}*@
+
+    public class Binding
+    {
+        public Binding(string name, string displayName, string shortcut)
+        {
+            FullName = name;
+            DisplayName = displayName;
+            Shortcuts.Add(shortcut);
+        }
+
+        public Binding()
+        {
+            FullName = string.Empty;
+        }
+
+        public string FullName;
+        public string DisplayName;
+        public List<string> Shortcuts = new List<string>();
+    }
+}
