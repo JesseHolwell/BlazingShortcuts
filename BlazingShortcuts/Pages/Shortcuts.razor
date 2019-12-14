@@ -2,21 +2,7 @@
 @inject IFileReaderService fileReaderService;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@page "/shortcuts"
-
-<style>
-    .@dropTargetClass {
-        display:block;
-        padding: 20px;
-        margin-bottom: 10px;
-        border: 1px dashed black;
-        border-radius: 5px;
-    }
-    .@dropTargetDragClass {
-        border-color: orangered;
-        font-weight: bold;
-    }
-</style>
+@page "/"
 
 <div class="@DropClass"
      @ref=dropTargetElement
@@ -26,40 +12,60 @@
     Drop Files here.
     @foreach (var fileInfo in FileList)
     {
-        <br />@fileInfo.Name
+    <br />@fileInfo.Name
     }
 </div>
 
 <br />
 <button @onclick="ReadFile" class="btn btn-primary">Read file</button>
 <button @onclick="ClearFile" class="btn btn-primary">Clear</button>
+<button class="btn btn-danger">Print</button>
+<button class="btn btn-danger">Save</button>
+<button class="btn btn-danger">Reset</button>
 
+<br />
 <br />
 @*<br />
     <textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>*@
 
 @if (bindings != null)
 {
-    <div class="row">
+<div class="row">
 
-        @foreach (string key in bindings.Keys)
+    @foreach (var key in bindings.bindings)
         {
-            <article class="col-12 col-sm-6 col-md-4 key-group">
-                <h3 class="shortcut-key" data-toggle="collapse" data-target="#@key.Replace(' ', '-')">@key</h3>
-                <dl id="@key.Replace(' ', '-')" class="shortcuts">
-                    @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
-                    @foreach (Binding binding in bindings[key])
+    <div class="col-12 col-sm-6 col-md-4">
+        <div>
+            @if(bindings.bindings.IndexOf(key) != 0)
+                {
+            <button @onclick="@(() => MoveUp(key))" class="btn btn-outline-secondary">Up</button>
+                }
+            @if(bindings.bindings.IndexOf(key) != bindings.bindings.Count() - 1)
+                {
+            <button @onclick="@(() => MoveDown(key))" class="btn btn-outline-secondary">Down</button>
+                }
+            <button @onclick="@(() => Toggle(key))" class="btn btn-outline-primary">Toggle</button>
+        </div>
+        <article class="key-group">
+            <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
+            @if (key.visible)
                     {
-                        <dt>@binding.DisplayName</dt>
-                        foreach (string shortcut in binding.Shortcuts)
-                        {
-                            <dd class="shortcut">@shortcut</dd>
-                        }
+            <dl id="@key.name.Replace(' ', '-')" class="shortcuts">
+                @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
+                @foreach (Binding binding in key.bindings)
+                            {
+                <dt>@binding.DisplayName</dt>
+                @foreach (string shortcut in binding.Shortcuts)
+                                {
+                <dd class="shortcut">@shortcut</dd>
+                                }
+                            }
+            </dl>
                     }
-                </dl>
-            </article>
-        }
+        </article>
     </div>
+        }
+</div>
 }
 
 @code {
@@ -85,6 +91,38 @@
         }
     }
 
+    public async Task MoveUp(KeyGroup key)
+    {
+        var oldIndex = bindings.bindings.IndexOf(key);
+
+        bindings.bindings.RemoveAt(oldIndex);
+
+        // the actual index could have shifted due to the removal
+
+        bindings.bindings.Insert(--oldIndex, key);
+
+        this.StateHasChanged();
+    }
+
+    public async Task MoveDown(KeyGroup key)
+    {
+        var oldIndex = bindings.bindings.IndexOf(key);
+
+        bindings.bindings.RemoveAt(oldIndex);
+
+        // the actual index could have shifted due to the removal
+
+        bindings.bindings.Insert(++oldIndex, key);
+
+        this.StateHasChanged();
+    }
+
+    public async Task Toggle(KeyGroup key)
+    {
+        key.visible = !key.visible;
+        this.StateHasChanged();
+    }
+
 
     ElementReference dropTargetElement;
     IFileReaderRef dropReference;
@@ -93,7 +131,9 @@
     const string dropTargetDragClass = "droptarget-drag";
     const string dropTargetClass = "droptarget";
 
-    public Dictionary<string, List<Binding>> bindings = null;
+    public BindingsViewModel bindings = null;
+
+
 
     private List<string> _dropClasses = new List<string>() { dropTargetClass };
 
@@ -189,11 +229,12 @@
 
     public static int ShortcutCount = 0;
 
-    public async Task<Dictionary<string, List<Binding>>> GenerateList(byte[] file)
+    public async Task<BindingsViewModel> GenerateList(byte[] file)
     {
         ShortcutCount = 0;
 
-        Dictionary<string, List<Binding>> dic = new Dictionary<string, List<Binding>>();
+        //Dictionary<string, List<Binding>> dic = new Dictionary<string, List<Binding>>();
+        BindingsViewModel model = new BindingsViewModel();
 
         Output += $"Generating...";
         this.StateHasChanged();
@@ -217,12 +258,12 @@
             var name = node.Attributes["name"].Value;
             var shortcut = node.Attributes["shortcut"].Value;
 
-            if (string.IsNullOrEmpty(name))
-                continue;
+            //if (string.IsNullOrEmpty(name))
+            //    continue;
 
             Binding prev = new Binding();
 
-            Binding binding = prev.FullName == name ? prev : CreateBinding(dic, name, shortcut);
+            Binding binding = prev.FullName == name ? prev : CreateBinding(model, name, shortcut);
 
             if (!binding.Shortcuts.Contains(shortcut))
                 prev.Shortcuts.Add(shortcut);
@@ -231,20 +272,21 @@
             ShortcutCount += 1;
         }
 
-        return dic;
+        return model;
     }
 
-    private static Binding CreateBinding(Dictionary<string, List<Binding>> dic, string name, string shortcut)
+    private static Binding CreateBinding(BindingsViewModel model, string name, string shortcut)
     {
         int index = name.IndexOf('.');
         string displayName = index > 0 ? name.Substring(name.LastIndexOf('.') + 1) : name;
         string prefix = index > 0 ? CleanName(name.Substring(0, index)) : "Misc";
         Binding binding = new Binding(name, CleanName(displayName), shortcut);
 
-        if (!dic.ContainsKey(prefix))
-            dic[prefix] = new List<Binding>();
+        if (!model.bindings.Any(x => x.name == prefix))
+            model.bindings.Add(new KeyGroup() { name = prefix });
 
-        dic[prefix].Add(binding);
+        model.bindings.Single(x => x.name == prefix).bindings.Add(binding);
+        //dic[prefix].Add(binding);
 
         return binding;
     }
@@ -280,6 +322,30 @@
         }
     }
 
+    public class BindingsViewModel
+    {
+        public BindingsViewModel()
+        {
+            this.bindings = new List<KeyGroup>();
+        }
+
+        public List<KeyGroup> bindings { get; set; }
+    }
+
+    public class KeyGroup
+    {
+        public KeyGroup()
+        {
+            this.bindings = new List<Binding>();
+        }
+
+        public string name { get; set; }
+
+        public bool visible { get; set; }
+
+        public List<Binding> bindings { get; set; }
+    }
+
     public class Binding
     {
         public Binding(string name, string displayName, string shortcut)
@@ -297,5 +363,7 @@
         public string FullName;
         public string DisplayName;
         public List<string> Shortcuts = new List<string>();
+
+        public bool Display;
     }
 }

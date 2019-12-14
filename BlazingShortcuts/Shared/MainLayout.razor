@@ -1,15 +1,46 @@
 ﻿@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <div class="sidebar">
     <NavMenu />
 </div>
 
-<div class="main">
+<div class="main @(theme ? "dark" : "light")">
     <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        @*<a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>*@
+        <button @onclick="ToggleTheme" class="btn btn-outline-info">
+            @*@(!theme ? "dark" : "light")*@
+            @if (theme)
+            {
+            <i class="fas fa-sun"></i>
+            }
+            else {
+            <i class="fas fa-moon"></i>
+            }
+        </button>
     </div>
 
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code {
+
+    public string key = "dark";
+    public bool theme = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var dark = await localStorage.GetItemAsync<bool>(key);
+
+        if (dark == true)
+            theme = dark;
+    }
+
+    public async Task ToggleTheme()
+    {
+        theme = !theme;
+        await localStorage.SetItemAsync(key, theme);
+    }
+
+}

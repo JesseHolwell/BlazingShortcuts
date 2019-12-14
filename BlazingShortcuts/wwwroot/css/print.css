@@ -1,0 +1,27 @@
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+@media print {
+    .btn {
+        display:none;
+    }
+
+    .navbar {
+        display: none;
+    }
+
+    .droptarget {
+        display:none;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .key-hidden {
+        display:none
+    }
+
+    .no-print, .no-print * {
+        display: none !important;
+    }
+}
