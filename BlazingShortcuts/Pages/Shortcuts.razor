@@ -1,15 +1,9 @@
 ﻿@using System.IO;
 @inject IFileReaderService fileReaderService;
-@inject SessionStorage sessionStorage;
-@inject LocalStorage localStorage;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @page "/shortcuts"
-@*<h1>Hello, dropped files!</h1>
 
-    Welcome to your new filestreaming app.
-    <br />
-    This demo reads files that was dropped in without doing anything particular with it.
-    <br />
-    <br />*@
 <style>
     .@dropTargetClass {
         display:block;
@@ -35,16 +29,14 @@
         <br />@fileInfo.Name
     }
 </div>
-@*<input id="additive" type="checkbox" value=@Additive @onchange="OnAdditiveChange" />
-    <label for="additive">Additive</label>*@
+
 <br />
 <button @onclick="ReadFile" class="btn btn-primary">Read file</button>
 <button @onclick="ClearFile" class="btn btn-primary">Clear</button>
 
 <br />
-<br />
-
-<textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>
+@*<br />
+    <textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>*@
 
 @if (bindings != null)
 {
@@ -54,7 +46,8 @@
         {
             <article class="col-12 col-sm-6 col-md-4 key-group">
                 <h3 class="shortcut-key" data-toggle="collapse" data-target="#@key.Replace(' ', '-')">@key</h3>
-                <dl id="@key.Replace(' ', '-')" class="collapse shortcuts">
+                <dl id="@key.Replace(' ', '-')" class="shortcuts">
+                    @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
                     @foreach (Binding binding in bindings[key])
                     {
                         <dt>@binding.DisplayName</dt>
@@ -74,33 +67,22 @@
     public string key = "bindings";
     protected override async Task OnInitializedAsync()
     {
-        //await sessionStorage.SetItem<Binding[]>(key, bindings);
-        //await localStorage.SetItem<string>(key, "jesse was here");
-        //var fromLocal = await localStorage.GetItem<string>(key);
 
-        //Output += fromLocal;
-        //this.StateHasChanged();
+        var bytes = await localStorage.GetItemAsync<byte[]>(key);
 
-        //await sessionStorage.SetItem<Binding[]>(key, bindings);
-        //await localStorage.SetItem<Binding[]>(key, bindings);
-        //bindings = await sessionStorage.GetItem<Dictionary<string, List<Binding>>>(key);
+        if (bytes != null)
+        {
+            Output += "Generating list from session storage\n";
+            this.StateHasChanged();
 
-        //var file = await sessionStorage.GetItem<IFileReference>(key);
-
-        //if (file != null)
-        //{
-        //    using (var fs = await file.OpenReadAsync())
-        //    {
-        //        Output += $"Reading file...\n";
-
-        //        this.StateHasChanged();
-
-        //        bindings = await GenerateList(fs);
-
-        //        Output += $"Didnt actually read the file\n";
-        //    }
-        //    //var fromLocal = await localStorage.GetItem<Binding[]>(key);
-        //}
+            bindings = await GenerateList(bytes);
+            this.StateHasChanged();
+        }
+        else
+        {
+            Output += "no found file\n";
+            this.StateHasChanged();
+        }
     }
 
 
@@ -182,36 +164,21 @@
             Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
             Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
             Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
-            Output += $"Reading file...";
             this.StateHasChanged();
-
-            //var result = Commands.GenerateList(file);
-
-            await localStorage.SetItem<IFileReference>(key, file);
 
             using (var fs = await file.OpenReadAsync())
             {
-                Output += $"Reading file...{nl}";
+                var bytes = await StreamToByteArray(fs);
+                Output += $"Saving file in session...\n";
+                await localStorage.SetItemAsync(key, bytes);
+
+                Output += $"Reading file...\n";
 
                 this.StateHasChanged();
 
-                //bindings = await GenerateList(fs);
-
-                Output += $"Didnt actually read the file{nl}";
+                bindings = await GenerateList(bytes);
             }
 
-            //using (var fs = await file.OpenReadAsync())
-            //{
-            //    var bufferSize = 4096;
-            //    var buffer = new byte[bufferSize];
-            //    int count;
-            //    while ((count = await fs.ReadAsync(buffer, 0, buffer.Length)) != 0)
-            //    {
-            //        Output += $"Read {count} bytes. {fs.Position} / {fs.Length}{nl}";
-            //        this.StateHasChanged();
-            //    }
-
-            //}
             this.StateHasChanged();
         }
 
@@ -219,40 +186,41 @@
 
     //public class Commands
     //{
+
     public static int ShortcutCount = 0;
 
-    public async Task<Dictionary<string, List<Binding>>> GenerateList(Stream file)
+    public async Task<Dictionary<string, List<Binding>>> GenerateList(byte[] file)
     {
         ShortcutCount = 0;
 
-        //var UrlString = @"P:\Users\jesse\AppData\2019.xml";
-
         Dictionary<string, List<Binding>> dic = new Dictionary<string, List<Binding>>();
-        //XmlDocument doc = XmlDocument.Load(HostingEnvironment.MapPath(UrlString));
 
-        Output += $"Reading...";
+        Output += $"Generating...";
         this.StateHasChanged();
 
-        //var reader = new XmlTextReader();
-
-
-        XmlTextReader reader = new XmlTextReader(file);
-
-        while (await reader.ReadAsync())
+        XmlDocument doc = new XmlDocument();
+        string xml = Encoding.UTF8.GetString(file);
+        if (xml.Contains("<?xml"))
         {
-            var name = reader.GetAttribute("name");
-            var shortcut = reader.GetAttribute("shortcut");
+            xml = xml.Substring(xml.IndexOf("?>") + 2);
+        }
+
+        doc.LoadXml(xml);
+
+        XmlNodeList nodes = doc.DocumentElement.GetElementsByTagName("command");
+
+        Output += $"nodes found {nodes.Count}";
+        this.StateHasChanged();
+
+        foreach (XmlNode node in nodes)
+        {
+            var name = node.Attributes["name"].Value;
+            var shortcut = node.Attributes["shortcut"].Value;
 
             if (string.IsNullOrEmpty(name))
                 continue;
 
-
             Binding prev = new Binding();
-
-            //foreach (XmlElement node in doc.Descendants("command"))
-            //{
-            //string name = node.Attribute("name").Value;
-            //string shortcut = node.Attribute("shortcut").Value;
 
             Binding binding = prev.FullName == name ? prev : CreateBinding(dic, name, shortcut);
 
@@ -300,7 +268,17 @@
 
         return sb.ToString();
     }
+
     @*}*@
+
+    public async static Task<byte[]> StreamToByteArray(Stream input)
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            await input.CopyToAsync(ms);
+            return ms.ToArray();
+        }
+    }
 
     public class Binding
     {

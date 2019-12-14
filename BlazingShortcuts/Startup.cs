@@ -1,5 +1,6 @@
-using Blazor.Extensions.Storage;
 using Blazor.FileReader;
+using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +16,8 @@ namespace BlazingShortcuts
                 options.InitializeOnFirstCall = true;
             });
 
-            services.AddStorage();
+            services.AddBlazoredLocalStorage();
+            services.AddBlazoredSessionStorage();
         }
 
         public void Configure(IComponentsApplicationBuilder app)
