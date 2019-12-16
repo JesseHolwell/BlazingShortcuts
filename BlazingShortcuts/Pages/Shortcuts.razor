@@ -12,7 +12,7 @@
     Drop Files here.
     @foreach (var fileInfo in FileList)
     {
-    <br />@fileInfo.Name
+        <br />@fileInfo.Name
     }
 </div>
 
@@ -30,42 +30,54 @@
 
 @if (bindings != null)
 {
-<div class="row">
+    @*<div class="row">*@
+    <div class="stone-wall" style="column-count: 4">
 
-    @foreach (var key in bindings.bindings)
+        @foreach (var key in bindings.bindings)
         {
-    <div class="col-12 col-sm-6 col-md-4">
-        <div>
-            @if(bindings.bindings.IndexOf(key) != 0)
-                {
-            <button @onclick="@(() => MoveUp(key))" class="btn btn-outline-secondary">Up</button>
-                }
-            @if(bindings.bindings.IndexOf(key) != bindings.bindings.Count() - 1)
-                {
-            <button @onclick="@(() => MoveDown(key))" class="btn btn-outline-secondary">Down</button>
-                }
-            <button @onclick="@(() => Toggle(key))" class="btn btn-outline-primary">Toggle</button>
-        </div>
-        <article class="key-group">
-            <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
-            @if (key.visible)
+            @*<div class="col-12 col-sm-6 col-md-4 @(key.visible ? "" : "no-print")">*@
+            <div class="stone @(key.visible ? "" : "no-print")">
+                <div class="stone-head">
+                    @if (bindings.bindings.IndexOf(key) != 0)
                     {
-            <dl id="@key.name.Replace(' ', '-')" class="shortcuts">
-                @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
-                @foreach (Binding binding in key.bindings)
-                            {
-                <dt>@binding.DisplayName</dt>
-                @foreach (string shortcut in binding.Shortcuts)
-                                {
-                <dd class="shortcut">@shortcut</dd>
-                                }
-                            }
-            </dl>
+                        <button @onclick="@(() => MoveUp(key))" class="btn btn-outline-secondary">Up</button>
                     }
-        </article>
-    </div>
+                    @if (bindings.bindings.IndexOf(key) != bindings.bindings.Count() - 1)
+                    {
+                        <button @onclick="@(() => MoveDown(key))" class="btn btn-outline-secondary">Down</button>
+                    }
+                    <button @onclick="@(() => Toggle(key))" class="btn btn-outline-primary">Toggle</button>
+                </div>
+                <div class="stone-body">
+                    <div class="key-group">
+                        <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
+                        @if (key.visible)
+                        {
+                            <div id="@key.name.Replace(' ', '-')" class="shortcuts">
+                                @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
+                                @foreach (Binding binding in key.bindings)
+                                {
+                                    @if (binding.Display)
+                                    {
+                                        <div>
+                                            @binding.DisplayName
+                                            <button class="btn btn-sm btn-outline-danger">X</button>
+                                        </div>
+                                        @foreach (string shortcut in binding.Shortcuts)
+                                        {
+                                            <div class="shortcut">@shortcut</div>
+                                        }
+                                    }
+
+                                    @*@onclick= "@(() => Remove(key))"*@
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
         }
-</div>
+    </div>
 }
 
 @code {
@@ -330,6 +342,21 @@
         }
 
         public List<KeyGroup> bindings { get; set; }
+
+        public string Save()
+        {
+            return "";
+        }
+
+        public void Load(string input)
+        {
+
+        }
+
+        public void Reset()
+        {
+
+        }
     }
 
     public class KeyGroup
@@ -341,7 +368,7 @@
 
         public string name { get; set; }
 
-        public bool visible { get; set; }
+        public bool visible { get; set; } = true;
 
         public List<Binding> bindings { get; set; }
     }
@@ -364,6 +391,6 @@
         public string DisplayName;
         public List<string> Shortcuts = new List<string>();
 
-        public bool Display;
+        public bool Display { get; set; } = true;
     }
 }

@@ -1,8 +1,6 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-@media print {
+﻿@media print {
     .btn {
-        display:none;
+        display: none;
     }
 
     .navbar {
@@ -10,7 +8,7 @@
     }
 
     .droptarget {
-        display:none;
+        display: none;
     }
 
     .sidebar {
@@ -18,7 +16,7 @@
     }
 
     .key-hidden {
-        display:none
+        display: none
     }
 
     .no-print, .no-print * {
