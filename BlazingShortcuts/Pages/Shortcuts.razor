@@ -31,7 +31,7 @@
 @if (bindings != null)
 {
     @*<div class="row">*@
-    <div class="stone-wall" style="column-count: 4">
+    <div class="stone-wall" style="column-count: 2">
 
         @foreach (var key in bindings.bindings)
         {
@@ -53,20 +53,22 @@
                         <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
                         @if (key.visible)
                         {
-                            <div id="@key.name.Replace(' ', '-')" class="shortcuts">
+                            <div id="@key.name.Replace(' ', '-')" class="shortcuts row">
                                 @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
                                 @foreach (Binding binding in key.bindings)
                                 {
                                     @if (binding.Display)
                                     {
-                                        <div>
+                                        <div class="col-6">
                                             @binding.DisplayName
                                             <button class="btn btn-sm btn-outline-danger">X</button>
                                         </div>
-                                        @foreach (string shortcut in binding.Shortcuts)
-                                        {
-                                            <div class="shortcut">@shortcut</div>
-                                        }
+                                        <div class="col-6">
+                                            @foreach (string shortcut in binding.Shortcuts)
+                                            {
+                                                <div class="shortcut">@shortcut</div>
+                                            }
+                                        </div>
                                     }
 
                                     @*@onclick= "@(() => Remove(key))"*@
