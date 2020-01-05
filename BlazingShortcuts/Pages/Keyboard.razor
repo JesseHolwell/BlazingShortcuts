@@ -1,33 +1,7 @@
 ﻿@page "/keyboard"
-@*<h1>Counter</h1>
-
-    <p>Current count: @currentCount</p>
-
-    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-    @code {
-        private int currentCount = 0;
-
-        private void IncrementCount()
-        {
-            currentCount++;
-        }
-    }*@
 
 <div class="content-main">
-    <div class="cable">
-    </div>
     <div class="keyboard">
-        <div class="logo">
-            hp
-        </div>
-
-        <div class="lights">
-            <span>1</span>
-            <span>A</span>
-            <span>V</span>
-        </div>
-
 
         <div class="section-a">
             <div>
@@ -74,14 +48,15 @@
                     F12
                 </div>
             </div>
+
             <br /><br />
+
             <div>
                 <!--END FUNCTION KEYS -->
 
                 <div class="key num dual">
                     ~<br>`
                 </div>
-
                 <div class="key num dual">
                     !<br>1
                 </div>
@@ -252,9 +227,10 @@
                 <div class="key shift right">
                     Shift
                 </div>
-
             </div>
+
             <br /><br />
+
             <div>
                 <div class="key ctrl">
                     Ctrl
@@ -267,8 +243,6 @@
                 </div>
                 <div class="key space">
 
-
-
                 </div>
                 <div class="key">
                     Alt
@@ -277,13 +251,14 @@
                     &hearts;
                 </div>
                 <div class="key">
-                    Prnt
+                    &Delta;
                 </div>
                 <div class="key ctrl">
                     Ctrl
                 </div>
             </div><!-- end section-a-->
         </div>
+
         <div class="section-b">
             <div class="key function small">
                 Prnt Scrn
@@ -294,7 +269,9 @@
             <div class="key function small">
                 Pause Break
             </div>
+
             <br /><br />
+
             <div class="sec-func">
                 <div class="key">
                     Insert
@@ -305,6 +282,9 @@
                 <div class="key dual">
                     Page Up
                 </div>
+
+                <br /><br />
+
                 <div class="key">
                     Del
                 </div>
@@ -314,8 +294,12 @@
                 <div class="key dual">
                     Page Down
                 </div>
-                <br /><br />
-                <div class="arrows">
+            </div><!-- end arrows -->
+
+            <br /><br /><br />
+
+            <div class="arrows">
+                <div>
                     <div class="key hidden">
 
                     </div>
@@ -325,6 +309,8 @@
                     <div class="key hidden">
 
                     </div>
+                </div>
+                <div>
                     <div class="key">
                         &lt;
                     </div>
@@ -334,9 +320,9 @@
                     <div class="key">
                         &gt;
                     </div>
-                </div><!-- end arrows -->
-            </div><!-- end sec-func -->
+                </div>
 
+            </div><!-- end sec-func -->
 
         </div><!-- end section-b-->
     </div>
@@ -352,15 +338,7 @@
         background-color: #14B524;
     }
 
-    .cable {
-        height: 100px;
-        width: 10px;
-        background-color: #000;
-        margin: 0 60%;
-    }
-
     .keyboard {
-        width: 800px;
         height: 320px;
         background-color: #111;
         margin: 0px auto;
@@ -368,47 +346,6 @@
         padding: 30px;
         color: #eee;
     }
-
-    .logo {
-        width: 40px;
-        height: 40px;
-        background-color: #CCC;
-        color: #222;
-        font-weight: 300;
-        font-style: oblique;
-        font-size: 30px;
-        line-height: 40px;
-        text-align: center;
-        margin: -20px auto 10px auto;
-        border-radius: 40px;
-    }
-
-
-    .lights {
-        float: right;
-        position: relative;
-        top: -45px;
-        right: 8px;
-        padding: 0;
-        margni: 0;
-    }
-
-        .lights span {
-            margin: 0 20px 0 20px;
-            padding: 0;
-            text-align: center;
-        }
-
-            .lights span:after {
-                content: "";
-                width: 11px;
-                height: 8px;
-                top: 22px;
-                margin-left: -9px;
-                background-color: #DBB921;
-                position: absolute;
-                border-radius: 3px;
-            }
 
     .key {
         width: 40px;

@@ -4,19 +4,39 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>BlazingShortcuts</title>
+    <title>VS Shortcuts</title>
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="css/dark.css" rel="stylesheet" />
     <link href="css/print.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <style>
+        .loading-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width:100%;
+        }
+    </style>
 </head>
 
 <body>
     <!--<app>Loading...</app>-->
     <!--<div class="spinner-grow text-info"></div>-->
-    <app><div class="spinner-border text-info"></div></app>
+
+    <app>
+        <div class="loading-panel">
+            <div>
+                <h1>VS Shortcuts</h1>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-info"></div>
+                </div>
+            </div>
+        </div>
+    </app>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -25,5 +45,7 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
+
+
 
 </html>
