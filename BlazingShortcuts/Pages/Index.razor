@@ -1,7 +1,14 @@
-﻿@page "/oldindex"
+﻿@page "/"
 
-<h1>Hello, world!</h1>
+@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel bindings { get; set; }
+}
 
-Welcome to your new app.
+    <div>
+        <div>Download [this] extension to export your shortcuts from visual studio</div>
+        <div>Jesse is awesome</div>
+        <br />
+        <br />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <FileUpload />
+    </div>

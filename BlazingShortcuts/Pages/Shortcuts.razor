@@ -1,55 +1,83 @@
-﻿@using System.IO;
-@inject IFileReaderService fileReaderService;
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@page "/"
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@page "/shortcuts"
 
-<div class="@DropClass"
-     @ref=dropTargetElement
-     @ondrop=OnDrop
-     @ondragenter=OnDragEnter
-     @ondragleave=OnDragLeave>
-    Drop Files here.
-    @foreach (var fileInfo in FileList)
-    {
-        <br />@fileInfo.Name
-    }
+@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel bindings { get; set; }
+}
+
+<div class="content-sidebar">
+    <div>
+        <ul class="nav flex-column">
+            @foreach (var v in bindings.bindings)
+            {
+                <li class="nav-item px-1 m-1 @(v.visible ? "active" : "")" @onclick="@(() => Toggle(v))">
+                    <span>@v.name</span>
+                    @*<button @onclick="@(() => Toggle(v))" class="btn btn-outline-primary">Toggle</button>*@
+                </li>
+            }
+        </ul>
+    </div>
 </div>
 
-<br />
-<button @onclick="ReadFile" class="btn btn-primary">Read file</button>
-<button @onclick="ClearFile" class="btn btn-primary">Clear</button>
-<button class="btn btn-danger">Print</button>
-<button class="btn btn-danger">Save</button>
-<button class="btn btn-danger">Reset</button>
+<style>
+    .nav.flex-column {
+        padding: 5px;
+    }
 
-<br />
-<br />
-@*<br />
-    <textarea style="max-width: 100%;" cols="50" rows="20">@Output</textarea>*@
+    .content-sidebar .nav-item {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        line-height: 2rem;
+        background-color: rgba(255,255,255,0.1)
+    }
 
-@if (bindings != null)
-{
-    @*<div class="row">*@
-    <div class="stone-wall" style="column-count: 2">
+        .content-sidebar .nav-item.active {
+            background-color: rgba(255,255,255,0.25)
+        }
 
-        @foreach (var key in bindings.bindings)
-        {
-            @*<div class="col-12 col-sm-6 col-md-4 @(key.visible ? "" : "no-print")">*@
-            <div class="stone @(key.visible ? "" : "no-print")">
-                <div class="stone-head">
-                    @if (bindings.bindings.IndexOf(key) != 0)
-                    {
-                        <button @onclick="@(() => MoveUp(key))" class="btn btn-outline-secondary">Up</button>
-                    }
-                    @if (bindings.bindings.IndexOf(key) != bindings.bindings.Count() - 1)
-                    {
-                        <button @onclick="@(() => MoveDown(key))" class="btn btn-outline-secondary">Down</button>
-                    }
-                    <button @onclick="@(() => Toggle(key))" class="btn btn-outline-primary">Toggle</button>
-                </div>
-                <div class="stone-body">
-                    <div class="key-group">
+    .key-group {
+        border-radius: 4px;
+        background-color: rgba(255,255,255,0.1);
+        padding:5px;
+    }
+
+    .content-sidebar {
+        border-radius: 4px;
+    }
+
+    .content-main {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
+<div class="content-main">
+
+    @if (bindings != null)
+    {
+        @*<div class="row">*@
+        <div style="flex:1">
+
+            @foreach (var key in bindings.bindings)
+            {
+                @*<div class="col-12 col-sm-6 col-md-4 @(key.visible ? "" : "no-print")">*@
+                <div class="@(key.visible ? "" : "d-none")" style="height:100%">
+                    @*<div class="stone-head">*@
+                    @*@if (bindings.bindings.IndexOf(key) != 0)
+                        {
+                            <button @onclick="@(() => MoveUp(key))" class="btn btn-outline-secondary">Up</button>
+                        }
+                        @if (bindings.bindings.IndexOf(key) != bindings.bindings.Count() - 1)
+                        {
+                            <button @onclick="@(() => MoveDown(key))" class="btn btn-outline-secondary">Down</button>
+                        }
+                        <button @onclick="@(() => Toggle(key))" class="btn btn-outline-primary">Toggle</button>*@
+                    @*</div>
+                        <div class="stone-body">*@
+                    <div class="key-group ml-3 px-2" style="height:100%">
                         <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
                         @if (key.visible)
                         {
@@ -61,7 +89,7 @@
                                     {
                                         <div class="col-6">
                                             @binding.DisplayName
-                                            <button class="btn btn-sm btn-outline-danger">X</button>
+                                            @*<button class="btn btn-sm btn-outline-danger">X</button>*@
                                         </div>
                                         <div class="col-6">
                                             @foreach (string shortcut in binding.Shortcuts)
@@ -76,11 +104,13 @@
                             </div>
                         }
                     </div>
+                    @*</div>*@
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
+
+</div>
 
 @code {
 
@@ -92,15 +122,15 @@
 
         if (bytes != null)
         {
-            Output += "Generating list from session storage\n";
+            bindings.Output += "Generating list from session storage\n";
             this.StateHasChanged();
 
-            bindings = await GenerateList(bytes);
+            await bindings.GenerateList(bytes);
             this.StateHasChanged();
         }
         else
         {
-            Output += "no found file\n";
+            bindings.Output += "no found file\n";
             this.StateHasChanged();
         }
     }
@@ -133,266 +163,9 @@
 
     public async Task Toggle(KeyGroup key)
     {
-        key.visible = !key.visible;
+        bindings.bindings.ForEach(x => x.visible = false);
+        key.visible = true;
         this.StateHasChanged();
     }
 
-
-    ElementReference dropTargetElement;
-    IFileReaderRef dropReference;
-    bool Additive { get; set; }
-
-    const string dropTargetDragClass = "droptarget-drag";
-    const string dropTargetClass = "droptarget";
-
-    public BindingsViewModel bindings = null;
-
-
-
-    private List<string> _dropClasses = new List<string>() { dropTargetClass };
-
-    string DropClass => string.Join(" ", _dropClasses);
-    string Output { get; set; }
-    List<IFileInfo> FileList { get; } = new List<IFileInfo>();
-
-    protected override async Task OnAfterRenderAsync(bool isFirstRender)
-    {
-        if (isFirstRender)
-        {
-            dropReference = fileReaderService.CreateReference(dropTargetElement);
-            await dropReference.RegisterDropEventsAsync();
-        }
-    }
-
-    public async Task OnAdditiveChange(ChangeEventArgs e)
-    {
-        Additive = (bool)e.Value;
-        await dropReference.UnregisterDropEventsAsync();
-        await dropReference.RegisterDropEventsAsync(Additive);
-    }
-
-    public async Task ClearFile()
-    {
-        await dropReference.ClearValue();
-        await this.RefreshFileList();
-    }
-
-    public void OnDragEnter(EventArgs e)
-    {
-        _dropClasses.Add(dropTargetDragClass);
-    }
-
-    public void OnDragLeave(EventArgs e)
-    {
-        _dropClasses.Remove(dropTargetDragClass);
-    }
-
-    public async Task OnDrop(EventArgs e)
-    {
-        Output += "Dropped a file.";
-        _dropClasses.Remove(dropTargetDragClass);
-        this.StateHasChanged();
-        await this.RefreshFileList();
-    }
-
-    private async Task RefreshFileList()
-    {
-        this.FileList.Clear();
-        foreach (var file in await dropReference.EnumerateFilesAsync())
-        {
-            var fileInfo = await file.ReadFileInfoAsync();
-            this.FileList.Add(fileInfo);
-        }
-        this.StateHasChanged();
-    }
-
-    public async Task ReadFile()
-    {
-        Output = string.Empty;
-        this.StateHasChanged();
-        var nl = Environment.NewLine;
-        foreach (var file in await dropReference.EnumerateFilesAsync())
-        {
-            var fileInfo = await file.ReadFileInfoAsync();
-            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
-            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
-            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
-            Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
-            this.StateHasChanged();
-
-            using (var fs = await file.OpenReadAsync())
-            {
-                var bytes = await StreamToByteArray(fs);
-                Output += $"Saving file in session...\n";
-                await localStorage.SetItemAsync(key, bytes);
-
-                Output += $"Reading file...\n";
-
-                this.StateHasChanged();
-
-                bindings = await GenerateList(bytes);
-            }
-
-            this.StateHasChanged();
-        }
-
-    }
-
-    //public class Commands
-    //{
-
-    public static int ShortcutCount = 0;
-
-    public async Task<BindingsViewModel> GenerateList(byte[] file)
-    {
-        ShortcutCount = 0;
-
-        //Dictionary<string, List<Binding>> dic = new Dictionary<string, List<Binding>>();
-        BindingsViewModel model = new BindingsViewModel();
-
-        Output += $"Generating...";
-        this.StateHasChanged();
-
-        XmlDocument doc = new XmlDocument();
-        string xml = Encoding.UTF8.GetString(file);
-        if (xml.Contains("<?xml"))
-        {
-            xml = xml.Substring(xml.IndexOf("?>") + 2);
-        }
-
-        doc.LoadXml(xml);
-
-        XmlNodeList nodes = doc.DocumentElement.GetElementsByTagName("command");
-
-        Output += $"nodes found {nodes.Count}";
-        this.StateHasChanged();
-
-        foreach (XmlNode node in nodes)
-        {
-            var name = node.Attributes["name"].Value;
-            var shortcut = node.Attributes["shortcut"].Value;
-
-            //if (string.IsNullOrEmpty(name))
-            //    continue;
-
-            Binding prev = new Binding();
-
-            Binding binding = prev.FullName == name ? prev : CreateBinding(model, name, shortcut);
-
-            if (!binding.Shortcuts.Contains(shortcut))
-                prev.Shortcuts.Add(shortcut);
-
-            prev = binding;
-            ShortcutCount += 1;
-        }
-
-        return model;
-    }
-
-    private static Binding CreateBinding(BindingsViewModel model, string name, string shortcut)
-    {
-        int index = name.IndexOf('.');
-        string displayName = index > 0 ? name.Substring(name.LastIndexOf('.') + 1) : name;
-        string prefix = index > 0 ? CleanName(name.Substring(0, index)) : "Misc";
-        Binding binding = new Binding(name, CleanName(displayName), shortcut);
-
-        if (!model.bindings.Any(x => x.name == prefix))
-            model.bindings.Add(new KeyGroup() { name = prefix });
-
-        model.bindings.Single(x => x.name == prefix).bindings.Add(binding);
-        //dic[prefix].Add(binding);
-
-        return binding;
-    }
-
-    public static string CleanName(string name)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.Append(name[0]);
-
-        for (int i = 1; i < name.Length; i++)
-        {
-            char c = name[i];
-
-            if (char.IsUpper(c) && !char.IsUpper(name[i - 1]))
-            {
-                sb.Append(" ");
-            }
-
-            sb.Append(c);
-        }
-
-        return sb.ToString();
-    }
-
-    @*}*@
-
-    public async static Task<byte[]> StreamToByteArray(Stream input)
-    {
-        using (MemoryStream ms = new MemoryStream())
-        {
-            await input.CopyToAsync(ms);
-            return ms.ToArray();
-        }
-    }
-
-    public class BindingsViewModel
-    {
-        public BindingsViewModel()
-        {
-            this.bindings = new List<KeyGroup>();
-        }
-
-        public List<KeyGroup> bindings { get; set; }
-
-        public string Save()
-        {
-            return "";
-        }
-
-        public void Load(string input)
-        {
-
-        }
-
-        public void Reset()
-        {
-
-        }
-    }
-
-    public class KeyGroup
-    {
-        public KeyGroup()
-        {
-            this.bindings = new List<Binding>();
-        }
-
-        public string name { get; set; }
-
-        public bool visible { get; set; } = true;
-
-        public List<Binding> bindings { get; set; }
-    }
-
-    public class Binding
-    {
-        public Binding(string name, string displayName, string shortcut)
-        {
-            FullName = name;
-            DisplayName = displayName;
-            Shortcuts.Add(shortcut);
-        }
-
-        public Binding()
-        {
-            FullName = string.Empty;
-        }
-
-        public string FullName;
-        public string DisplayName;
-        public List<string> Shortcuts = new List<string>();
-
-        public bool Display { get; set; } = true;
-    }
 }

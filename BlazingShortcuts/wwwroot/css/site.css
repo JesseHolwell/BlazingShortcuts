@@ -46,6 +46,14 @@ app {
             text-overflow: ellipsis;
         }
 
+.content-sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+.content-main {
+    flex: 1;
+}
+
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
@@ -99,6 +107,7 @@ app {
 
 .content {
     padding-top: 1.1rem;
+    display: flex;
 }
 
 .navbar-toggler {
@@ -176,8 +185,8 @@ app {
     }
 
     .stone .stone-body {
-        padding:15px;
-        margin:15px;
+        padding: 15px;
+        margin: 15px;
     }
 
 
@@ -206,6 +215,10 @@ app {
         height: 100vh;
         position: sticky;
         top: 0;
+    }
+
+    .content-sidebar {
+        width: 300px;
     }
 
     .main .top-row {
