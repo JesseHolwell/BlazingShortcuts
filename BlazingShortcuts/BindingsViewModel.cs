@@ -16,10 +16,10 @@ namespace BlazingShortcuts
 
         public BindingsViewModel()
         {
-            this.bindings = new List<KeyGroup>();
+            this.Scope = new List<Scope>();
         }
 
-        public List<KeyGroup> bindings { get; set; }
+        public List<Scope> Scope { get; set; }
 
         public string Save()
         {
@@ -33,11 +33,12 @@ namespace BlazingShortcuts
 
         public void Reset()
         {
-
+            Scope = new List<Scope>();
         }
 
         public async Task GenerateList(byte[] file)
         {
+            Reset();
             ShortcutCount = 0;
 
             //Output += $"Generating...";
@@ -69,14 +70,14 @@ namespace BlazingShortcuts
 
                 Binding binding = prev.FullName == name ? prev : CreateBinding(this, name, shortcut);
 
-                if (!binding.Shortcuts.Contains(shortcut))
-                    prev.Shortcuts.Add(shortcut);
+                //if (!binding.Shortcuts.Contains(shortcut)) // ?
+                //    prev.Shortcuts.Add(shortcut);
 
-                prev = binding;
+                prev = binding; //TODO: ?
                 ShortcutCount += 1;
             }
 
-            bindings.First().visible = true;
+            Scope.First().Visible = true;
         }
 
         private static Binding CreateBinding(BindingsViewModel model, string name, string shortcut)
@@ -86,10 +87,10 @@ namespace BlazingShortcuts
             string prefix = index > 0 ? CleanName(name.Substring(0, index)) : "Misc";
             Binding binding = new Binding(name, CleanName(displayName), shortcut);
 
-            if (!model.bindings.Any(x => x.name == prefix))
-                model.bindings.Add(new KeyGroup() { name = prefix });
+            if (!model.Scope.Any(x => x.Name == prefix))
+                model.Scope.Add(new Scope() { Name = prefix });
 
-            model.bindings.Single(x => x.name == prefix).bindings.Add(binding);
+            model.Scope.Single(x => x.Name == prefix).Bindings.Add(binding);
             //dic[prefix].Add(binding);
 
             return binding;
@@ -116,18 +117,18 @@ namespace BlazingShortcuts
         }
     }
 
-    public class KeyGroup
+    public class Scope
     {
-        public KeyGroup()
+        public Scope()
         {
-            this.bindings = new List<Binding>();
+            this.Bindings = new List<Binding>();
         }
 
-        public string name { get; set; }
+        public string Name { get; set; }
 
-        public bool visible { get; set; } = false;
+        public bool Visible { get; set; } = false;
 
-        public List<Binding> bindings { get; set; }
+        public List<Binding> Bindings { get; set; }
     }
 
     public class Binding
@@ -136,7 +137,7 @@ namespace BlazingShortcuts
         {
             FullName = name;
             DisplayName = displayName;
-            Shortcuts.Add(shortcut);
+            Shortcut = shortcut;
         }
 
         public Binding()
@@ -144,9 +145,9 @@ namespace BlazingShortcuts
             FullName = string.Empty;
         }
 
-        public string FullName;
-        public string DisplayName;
-        public List<string> Shortcuts = new List<string>();
+        public string FullName { get; set; }
+        public string DisplayName { get; set; }
+        public string Shortcut { get; set; } //= new List<string>(); //TODO: change from list to single shortcut, add multiple bindings for multiple shortcuts
 
         public bool Display { get; set; } = true;
     }

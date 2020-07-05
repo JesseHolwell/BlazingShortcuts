@@ -20,7 +20,7 @@
         </button>
     </div>
 
-    <CascadingValue Value="@bindings" Name="ViewModel">
+    <CascadingValue Value="@model" Name="ViewModel">
         <div class="content px-4">
             @Body
         </div>
@@ -30,7 +30,7 @@
 
 @code {
 
-    public BindingsViewModel bindings = new BindingsViewModel();
+    public BindingsViewModel model = new BindingsViewModel();
 
     public string key = "dark";
     public bool theme = false;

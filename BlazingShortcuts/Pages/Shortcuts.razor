@@ -2,17 +2,24 @@
 @page "/shortcuts"
 
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel bindings { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
 }
+
+    <div>
+        <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
+        <button class="btn btn-outline-primary">Save</button>
+        <button class="btn btn-outline-primary">Reset</button>
+    </div>
 
 <div class="content-sidebar">
     <div>
         <ul class="nav flex-column">
-            @foreach (var v in bindings.bindings)
+            @foreach (var scope in model.Scope)
             {
-                <li class="nav-item px-1 m-1 @(v.visible ? "active" : "")" @onclick="@(() => Toggle(v))">
-                    <span>@v.name</span>
-                    @*<button @onclick="@(() => Toggle(v))" class="btn btn-outline-primary">Toggle</button>*@
+                <li class="nav-item px-1 m-1 @(scope.Visible ? "active" : "")" @onclick="@(() => Toggle(scope))">
+                    <span>@scope.Name</span>
+                    @if (configure)
+                    {<button @onclick="@(() => Toggle(scope))" class="btn btn-outline-primary">Toggle</button>}
                 </li>
             }
         </ul>
@@ -41,7 +48,7 @@
     .key-group {
         border-radius: 4px;
         background-color: rgba(255,255,255,0.1);
-        padding:5px;
+        padding: 5px;
     }
 
     .content-sidebar {
@@ -56,15 +63,15 @@
 
 <div class="content-main">
 
-    @if (bindings != null)
+    @if (model != null)
     {
         @*<div class="row">*@
         <div style="flex:1">
 
-            @foreach (var key in bindings.bindings)
+            @foreach (var scope in model.Scope)
             {
                 @*<div class="col-12 col-sm-6 col-md-4 @(key.visible ? "" : "no-print")">*@
-                <div class="@(key.visible ? "" : "d-none")" style="height:100%">
+                <div class="@(scope.Visible ? "" : "d-none")" style="height:100%">
                     @*<div class="stone-head">*@
                     @*@if (bindings.bindings.IndexOf(key) != 0)
                         {
@@ -78,12 +85,17 @@
                     @*</div>
                         <div class="stone-body">*@
                     <div class="key-group ml-3 px-2" style="height:100%">
-                        <h3 class="shortcut-key @(key.visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@key.name.Replace(' ', '-')">@key.name</h3>
-                        @if (key.visible)
+                        @*<div>filter by name</div>
+                        <div>filter by keybind</div>*@
+                        <button @onclick="@(() => SortByName(scope))" class="btn btn-outline-primary">Sort by name</button>
+                        <button @onclick="@(() => SortByBinding(scope))" class="btn btn-outline-primary">Sort by keybind</button>
+
+                        <h3 class="shortcut-key @(scope.Visible ? "key-visible" : "key-hidden")" data-toggle="collapse" data-target="#@scope.Name.Replace(' ', '-')">@scope.Name</h3>
+                        @if (scope.Visible)
                         {
-                            <div id="@key.name.Replace(' ', '-')" class="shortcuts row">
+                            <div id="@scope.Name.Replace(' ', '-')" class="shortcuts row">
                                 @*<dl id="@key.Replace(' ', '-')" class="collapse shortcuts">*@
-                                @foreach (Binding binding in key.bindings)
+                                @foreach (var binding in scope.Bindings)
                                 {
                                     @if (binding.Display)
                                     {
@@ -92,10 +104,10 @@
                                             @*<button class="btn btn-sm btn-outline-danger">X</button>*@
                                         </div>
                                         <div class="col-6">
-                                            @foreach (string shortcut in binding.Shortcuts)
-                                            {
-                                                <div class="shortcut">@shortcut</div>
-                                            }
+                                            @*@foreach (string shortcut in binding.Shortcuts)
+                                            {*@
+                                                <div class="shortcut">@binding.Shortcut</div>
+                                            @*}*@
                                         </div>
                                     }
 
@@ -122,49 +134,89 @@
 
         if (bytes != null)
         {
-            bindings.Output += "Generating list from session storage\n";
+            model.Output += "Generating list from session storage\n";
             this.StateHasChanged();
 
-            await bindings.GenerateList(bytes);
+            await model.GenerateList(bytes);
             this.StateHasChanged();
         }
         else
         {
-            bindings.Output += "no found file\n";
+            model.Output += "no found file\n";
             this.StateHasChanged();
         }
     }
 
-    public async Task MoveUp(KeyGroup key)
+    public bool configure = true;
+    public async Task Configure()
     {
-        var oldIndex = bindings.bindings.IndexOf(key);
+        configure = !configure;
+        this.StateHasChanged();
+    }
 
-        bindings.bindings.RemoveAt(oldIndex);
+    public bool SortByNameAscending = true;
+    public bool SortByBindingAscending = true;
 
-        // the actual index could have shifted due to the removal
+    public async Task SortByName(Scope scope)
+    {
+        var Scope = model.Scope.Single(x => x.Name == scope.Name);
 
-        bindings.bindings.Insert(--oldIndex, key);
+        if (SortByNameAscending)
+            Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.DisplayName).ToList();
+        else
+            Scope.Bindings = Scope.Bindings.OrderBy(x => x.DisplayName).ToList();
+
+        SortByNameAscending = !SortByNameAscending;
+        SortByBindingAscending = false;
 
         this.StateHasChanged();
     }
 
-    public async Task MoveDown(KeyGroup key)
+    public async Task SortByBinding(Scope scope)
     {
-        var oldIndex = bindings.bindings.IndexOf(key);
+        var Scope = model.Scope.Single(x => x.Name == scope.Name);
 
-        bindings.bindings.RemoveAt(oldIndex);
+        if (SortByBindingAscending)
+            Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.Shortcut).ToList();
+        else
+            Scope.Bindings = Scope.Bindings.OrderBy(x => x.Shortcut).ToList();
 
-        // the actual index could have shifted due to the removal
-
-        bindings.bindings.Insert(++oldIndex, key);
+        SortByBindingAscending = !SortByBindingAscending;
+        SortByNameAscending = false;
 
         this.StateHasChanged();
     }
 
-    public async Task Toggle(KeyGroup key)
+    public async Task MoveUp(Scope scope)
     {
-        bindings.bindings.ForEach(x => x.visible = false);
-        key.visible = true;
+        var oldIndex = model.Scope.IndexOf(scope);
+
+        model.Scope.RemoveAt(oldIndex);
+
+        // the actual index could have shifted due to the removal
+
+        model.Scope.Insert(--oldIndex, scope);
+
+        this.StateHasChanged();
+    }
+
+    public async Task MoveDown(Scope scope)
+    {
+        var oldIndex = model.Scope.IndexOf(scope);
+
+        model.Scope.RemoveAt(oldIndex);
+
+        // the actual index could have shifted due to the removal
+
+        model.Scope.Insert(++oldIndex, scope);
+
+        this.StateHasChanged();
+    }
+
+    public async Task Toggle(Scope scope)
+    {
+        model.Scope.ForEach(x => x.Visible = false);
+        scope.Visible = true;
         this.StateHasChanged();
     }
 
