@@ -36,6 +36,10 @@ namespace BlazingShortcuts
             Scope = new List<Scope>();
         }
 
+        //make this whole thing work by (de)serializing the viewmodel instead of storing the xml file
+        //public async byte[] ToByteArray()
+        //{
+        //}
         public async Task GenerateList(byte[] file)
         {
             Reset();
@@ -126,7 +130,9 @@ namespace BlazingShortcuts
 
         public string Name { get; set; }
 
-        public bool Visible { get; set; } = false;
+        public bool Visible { get; set; } = true;
+
+        public bool Current { get; set; } = false;
 
         public List<Binding> Bindings { get; set; }
     }
