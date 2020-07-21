@@ -1,52 +1,50 @@
 ﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@page "/shortcuts"
-
 @functions{
     [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
 }
 
-<style>
-    .content-sidebar .nav.flex-column {
-        padding: 5px;
-    }
-
-    .content-sidebar .nav-item {
-        color: #d7d7d7;
-        border-radius: 4px;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        line-height: 2rem;
-        background-color: rgba(255,255,255,0.1)
-    }
-
-        .content-sidebar .nav-item.active {
-            background-color: rgba(255,255,255,0.25)
+    <style>
+        .content-sidebar .nav.flex-column {
+            padding: 5px;
         }
 
-    .key-group {
-        border-radius: 4px;
-        background-color: rgba(255,255,255,0.1);
-        padding: 5px;
-    }
+        .content-sidebar .nav-item {
+            color: #d7d7d7;
+            border-radius: 4px;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            line-height: 2rem;
+            background-color: rgba(255,255,255,0.1)
+        }
 
-    .content-sidebar {
-        border-radius: 4px;
-    }
+            .content-sidebar .nav-item.active {
+                background-color: rgba(255,255,255,0.25)
+            }
 
-    .content-main {
-        display: flex;
-        flex-direction: column;
-    }
+        .key-group {
+            border-radius: 4px;
+            background-color: rgba(255,255,255,0.1);
+            padding: 5px;
+        }
 
-    .headerish {
-        width: 100%;
-    }
-</style>
+        .content-sidebar {
+            border-radius: 4px;
+        }
 
-@if (model == null)
+        .content-main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .headerish {
+            width: 100%;
+        }
+    </style>
+
+@if (!model.Scope.Any())
 {
-    <EmptyModel />
+    <Info />
 }
 else
 {
@@ -221,7 +219,6 @@ else
         SortByNameAscending = !SortByNameAscending;
         SortByBindingAscending = false;
 
-
         this.StateHasChanged();
     }
 
@@ -242,35 +239,8 @@ else
         this.StateHasChanged();
     }
 
-    //public async Task MoveUp(Scope scope)
-    //{
-    //    var oldIndex = model.Scope.IndexOf(scope);
-
-    //    model.Scope.RemoveAt(oldIndex);
-
-    //    // the actual index could have shifted due to the removal
-
-    //    model.Scope.Insert(--oldIndex, scope);
-
-    //    this.StateHasChanged();
-    //}
-
-    //public async Task MoveDown(Scope scope)
-    //{
-    //    var oldIndex = model.Scope.IndexOf(scope);
-
-    //    model.Scope.RemoveAt(oldIndex);
-
-    //    // the actual index could have shifted due to the removal
-
-    //    model.Scope.Insert(++oldIndex, scope);
-
-    //    this.StateHasChanged();
-    //}
-
     public async Task Toggle(Scope scope)
     {
-        //model.Scope.ForEach(x => x.Visible = false);
         scope.Visible = !scope.Visible;
         model.Scope = model.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
         this.StateHasChanged();
@@ -286,9 +256,6 @@ else
     public async Task ToggleDisplay(Binding binding)
     {
         binding.Display = !binding.Display;
-        //model.Scope.ForEach(x => x.Visible = false);
-        //scope.Visible = true;
-
         this.StateHasChanged();
     }
 

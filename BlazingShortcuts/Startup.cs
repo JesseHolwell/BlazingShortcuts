@@ -18,6 +18,7 @@ namespace BlazingShortcuts
 
             services.AddBlazoredLocalStorage();
             services.AddBlazoredSessionStorage();
+            services.AddSingleton<AppState, AppState>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)

@@ -1,0 +1,47 @@
+﻿@inject AppState AppState
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+}
+
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">VS Shortcuts</a>
+
+    <div>
+        <button>Import</button>
+        <button>Export</button>
+    </div>
+
+    <div>
+        <button @onclick="ToggleTheme" class="btn btn-outline-info">
+            @if (AppState.Theme)
+            {
+                <i class="fas fa-sun"></i>
+            }
+            else
+            {
+                <i class="fas fa-moon"></i>
+            }
+        </button>
+    </div>
+</div>
+
+
+@code {
+
+    public string key = "theme";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var theme = await localStorage.GetItemAsync<bool>(key);
+        AppState.ToggleTheme(theme);
+    }
+
+    async Task ToggleTheme()
+    {
+        var theme = AppState.ToggleTheme();
+        await localStorage.SetItemAsync(key, theme);
+    }
+
+}
