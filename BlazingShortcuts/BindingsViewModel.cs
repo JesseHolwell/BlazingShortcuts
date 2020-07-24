@@ -146,6 +146,7 @@ namespace BlazingShortcuts
             FullName = name;
             DisplayName = displayName;
             Shortcut = shortcut;
+            ShortcutKeys = GetKeys(shortcut);
         }
 
         public Binding()
@@ -153,10 +154,39 @@ namespace BlazingShortcuts
             FullName = string.Empty;
         }
 
+        private List<Keys> GetKeys(string shortcut)
+        {
+            var x = new List<Keys>();
+            foreach (var v in shortcut.Split(','))
+            {
+                var keys = new Keys();
+                var z = v.Split('+');
+                if (z.Length > 1)
+                {
+                    keys.Modifier = z[0];
+                    keys.Key = z[1];
+                }
+                else
+                {
+                    keys.Key = z[0];
+                }
+                x.Add(keys);
+            }
+            return x;
+        }
+
         public string FullName { get; set; }
         public string DisplayName { get; set; }
         public string Shortcut { get; set; } //= new List<string>(); //TODO: change from list to single shortcut, add multiple bindings for multiple shortcuts
+        public List<Keys> ShortcutKeys { get; set; }
 
         public bool Display { get; set; } = true;
+    }
+
+    public class Keys
+    {
+        public string Key { get; set; }
+
+        public string Modifier { get; set; }
     }
 }

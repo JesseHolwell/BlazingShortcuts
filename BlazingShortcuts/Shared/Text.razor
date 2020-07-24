@@ -7,7 +7,34 @@
         <h2>Ctrl + E, Ctrl + D</h2>
     </div>
     <div>
-        <input />
+        <input @onkeydown="@(e => KeyPress(e))" value="@keys"/>
     </div>
 </div>
 
+
+@code {
+
+    public string keys;
+    public List<Keys> KeyHistory = new List<Keys>();
+
+    public async Task KeyPress(KeyboardEventArgs args)
+    {
+        keys += args.Key;
+        //if args.key is a modifier
+            //set up a new Keys object
+        //else
+            //add to the existing one
+
+        if (KeyHistory.Count() > 1)
+            KeyHistory = new List<Keys>();
+
+        foreach (var v in model.Scope)
+        {
+            foreach (var y in v.Bindings)
+            {
+                y.Match = (y.Shortcut.StartsWith(KeyHistory));
+            }
+        }
+    }
+
+}

@@ -123,6 +123,8 @@
                 await localStorage.SetItemAsync(key, AppState.Serialize(model));
             }
 
+            AppState.ToggleInfo();
+
             this.StateHasChanged();
         }
 

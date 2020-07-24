@@ -43,7 +43,7 @@
     }
 </style>
 
-@if (!model.Scope.Any() || showInfo)
+@if (!model.Scope.Any() || AppState.ShowInfo)
 {
     if (model.Scope.Any())
     {
@@ -177,11 +177,9 @@ else
         AppState.ToggleFullscreen();
     }
 
-    public bool showInfo = false;
     public async Task ToggleInfo()
     {
-        showInfo = !showInfo;
-        this.StateHasChanged();
+        AppState.ToggleInfo(false);
     }
 
 }
