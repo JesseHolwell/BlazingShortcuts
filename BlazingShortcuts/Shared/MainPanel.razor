@@ -47,7 +47,7 @@
 {
     if (model.Scope.Any())
     {
-        <button @onclick="@(() => ToggleInfo())" class="btn btn-outline-primary">Hide</button>
+        <button @onclick="@(() => ToggleInfo(false))" class="btn btn-outline-primary">Hide</button>
     }
 
     <StartPanel />
@@ -63,7 +63,7 @@ else
         <button @onclick="@(() => ShowAll())" class="btn btn-outline-primary">Show all</button>
         <button @onclick="@(() => HideAll())" class="btn btn-outline-primary">Hide all</button>
         <button @onclick="@(() => Fullscreen())" class="btn btn-outline-primary">Fullscreen</button>
-        <button @onclick="@(() => ToggleInfo())" class="btn btn-outline-primary">Info</button>
+        <button @onclick="@(() => ToggleInfo(true))" class="btn btn-outline-primary">Info</button>
     </div>
 
     <ShortcutList />
@@ -182,9 +182,9 @@ else
         AppState.ToggleFullscreen();
     }
 
-    public async Task ToggleInfo()
+    public async Task ToggleInfo(bool? toggle = null)
     {
-        AppState.ToggleInfo(true);
+        AppState.ToggleInfo(toggle);
     }
 
 }

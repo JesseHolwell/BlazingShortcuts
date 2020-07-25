@@ -4,58 +4,68 @@
 }
 
 
-<div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
-    @foreach (var scope in model.Scope)
-    {
-        if (scope.HasMatch && scope.Visible || AppState.Configure)
-        {
-            <div class="stone">
-                <div>
-                    <span>@scope.Name</span>
-                    @if (AppState.Configure)
-                    {
-                        if (scope.Visible)
-                        {
-                            <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-danger">hide</button>
-                        }
-                        else
-                        {
-                            <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-primary">show</button>
-                        }
-                    }
-                </div>
-                <div class="key-group">
-                    <div class="shortcuts row">
-                        @foreach (var binding in scope.Bindings)
-                        {
-                            @if (binding.IsMatch && binding.Visible || AppState.Configure)
-                            {
-                                <div class="col-6">
-                                    @binding.DisplayName
-                                    @if (AppState.Configure)
-                                    {
-                                        if (binding.Visible)
-                                        {
-                                            <button class="btn btn-sm btn-outline-danger" @onclick="@(() => ToggleDisplay(binding))">hide</button>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ToggleDisplay(binding))">show</button>
-                                        }
-                                    }
-                                </div>
-                                <div class="col-6">
-                                    <div class="shortcut">@binding.Shortcut</div>
-                                </div>
-                            }
+    <div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
 
+        @if (AppState.Searching && !model.Scope.Any(x=>x.HasMatch))
+        {
+            <h3>No match found</h3>
+        }
+
+        @foreach (var scope in model.Scope)
+        {
+            if ((AppState.Searching && scope.HasMatch && scope.Visible)
+                || (!AppState.Searching && scope.Visible)
+                || AppState.Configure)
+            {
+                <div class="stone">
+                    <div>
+                        <span>@scope.Name</span>
+                        @if (AppState.Configure)
+                        {
+                            if (scope.Visible)
+                            {
+                                <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-danger">hide</button>
+                            }
+                            else
+                            {
+                                <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-primary">show</button>
+                            }
                         }
                     </div>
+                    <div class="key-group">
+                        <div class="shortcuts row">
+                            @foreach (var binding in scope.Bindings)
+                            {
+                                @if ((AppState.Searching && binding.IsMatch && binding.Visible)
+                                   || (!AppState.Searching && binding.Visible)
+                                   || AppState.Configure)
+                                {
+                                    <div class="col-6">
+                                        @binding.DisplayName
+                                        @if (AppState.Configure)
+                                        {
+                                            if (binding.Visible)
+                                            {
+                                                <button class="btn btn-sm btn-outline-danger" @onclick="@(() => ToggleDisplay(binding))">hide</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ToggleDisplay(binding))">show</button>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="shortcut">@binding.Shortcut</div>
+                                    </div>
+                                }
+
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         }
-    }
-</div>
+    </div>
 
 @code {
 

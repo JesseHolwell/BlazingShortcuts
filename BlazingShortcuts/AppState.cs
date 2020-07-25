@@ -16,6 +16,7 @@ namespace BlazingShortcuts
         public bool Fullscreen { get; private set; }
         public bool Configure { get; private set; }
         public bool ShowInfo { get; private set; }
+        public bool Searching { get; private set; }
 
         public bool ToggleTheme(bool? theme = null)
         {
@@ -43,6 +44,13 @@ namespace BlazingShortcuts
             ShowInfo = showInfo ?? !ShowInfo;
             NotifyStateChanged();
             return ShowInfo;
+        }
+
+        public bool IsSearching(bool? searching = null)
+        {
+            Searching = searching ?? !Searching;
+            NotifyStateChanged();
+            return Searching;
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();
