@@ -50,7 +50,7 @@
         <button @onclick="@(() => ToggleInfo())" class="btn btn-outline-primary">Hide</button>
     }
 
-    <Info />
+    <StartPanel />
 }
 else
 {
@@ -66,7 +66,7 @@ else
         <button @onclick="@(() => ToggleInfo())" class="btn btn-outline-primary">Info</button>
     </div>
 
-    <Print />
+    <ShortcutList />
 }
 
 @code {
@@ -83,12 +83,17 @@ else
 
         if (cereal != null)
         {
+            Console.WriteLine("Eating cereal");
+
             //model.Output += "Generating list from session storage\n";
             //this.StateHasChanged();
 
             //await model.GenerateList(bytes);
-            model = AppState.Deserialize(cereal);
-            this.StateHasChanged();
+            model.Scope = AppState.Deserialize(cereal);
+            Console.WriteLine("Ate cereal");
+            //this.StateHasChanged();
+
+            Console.WriteLine("Cereal eaten successfully");
         }
         else
         {
@@ -155,7 +160,7 @@ else
             Scope.Visible = false;
 
             foreach (var Binding in Scope.Bindings)
-                Binding.Display = false;
+                Binding.Visible = false;
         }
         this.StateHasChanged();
     }
@@ -167,7 +172,7 @@ else
             Scope.Visible = true;
 
             foreach (var Binding in Scope.Bindings)
-                Binding.Display = true;
+                Binding.Visible = true;
         }
         this.StateHasChanged();
     }
@@ -179,7 +184,7 @@ else
 
     public async Task ToggleInfo()
     {
-        AppState.ToggleInfo(false);
+        AppState.ToggleInfo(true);
     }
 
 }

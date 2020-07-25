@@ -1,6 +1,6 @@
 ﻿@inject AppState AppState
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected BlazingShortcuts.Old.OldBindingsViewModel model { get; set; }
 }
 
 
@@ -106,21 +106,21 @@
 
 @code {
 
-    public async Task Toggle(Scope scope)
+    public async Task Toggle(Old.Scope scope)
     {
         scope.Visible = !scope.Visible;
         model.Scope = model.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
         this.StateHasChanged();
     }
 
-    public async Task Display(Scope scope)
+    public async Task Display(Old.Scope scope)
     {
         model.Scope.ForEach(x => x.Current = false);
         scope.Current = true;
         this.StateHasChanged();
     }
 
-    public async Task ToggleDisplay(Binding binding)
+    public async Task ToggleDisplay(Old.Binding binding)
     {
         binding.Display = !binding.Display;
         this.StateHasChanged();

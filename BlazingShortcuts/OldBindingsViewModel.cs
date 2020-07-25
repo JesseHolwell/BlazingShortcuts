@@ -7,14 +7,14 @@ using System.Xml;
 
 namespace BlazingShortcuts.Old
 {
-    public class BindingsViewModel
+    public class OldBindingsViewModel
     {
 
         public string Output { get; set; }
 
         public static int ShortcutCount = 0;
 
-        public BindingsViewModel()
+        public OldBindingsViewModel()
         {
             this.Scope = new List<Scope>();
         }
@@ -84,7 +84,7 @@ namespace BlazingShortcuts.Old
             Scope.First().Visible = true;
         }
 
-        private static Binding CreateBinding(BindingsViewModel model, string name, string shortcut)
+        private static Binding CreateBinding(OldBindingsViewModel model, string name, string shortcut)
         {
             int index = name.IndexOf('.');
             string displayName = index > 0 ? name.Substring(name.LastIndexOf('.') + 1) : name;

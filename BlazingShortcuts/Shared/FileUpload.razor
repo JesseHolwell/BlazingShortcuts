@@ -1,5 +1,6 @@
 ﻿@inject AppState AppState
 @inject IFileReaderService fileReaderService;
+@inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @using System.IO;
 
@@ -8,6 +9,16 @@
 }
 
 <h1>File Upload</h1>
+
+<button @onclick="@(() => LoadDefaultFile("2019"))" class="btn btn-outline-primary">Jerry</button>
+<button @onclick="@(() => LoadDefaultFile("default"))" class="btn btn-outline-primary" disabled>Default</button>
+<button @onclick="@(() => LoadDefaultFile("basic"))" class="btn btn-outline-primary" disabled>Visual Basic 6</button>
+<button @onclick="@(() => LoadDefaultFile("csharp"))" class="btn btn-outline-primary" disabled>Visual C# 2005</button>
+<button @onclick="@(() => LoadDefaultFile("cpp2"))" class="btn btn-outline-primary" disabled>Visual C++ 2</button>
+<button @onclick="@(() => LoadDefaultFile("cpp6"))" class="btn btn-outline-primary" disabled>Visual C++ 6</button>
+<button @onclick="@(() => LoadDefaultFile("vs6"))" class="btn btn-outline-primary" disabled>Visual Studio 6</button>
+<button @onclick="@(() => LoadDefaultFile("vscode"))" class="btn btn-outline-primary" disabled>Visual Studio Code</button>
+<button @onclick="@(() => LoadDefaultFile("rsharp"))" class="btn btn-outline-primary" disabled>Resharper (Visual Studio)</button>
 
 <div class="@DropClass"
      @ref=dropTargetElement
@@ -78,7 +89,7 @@
 
     public async Task OnDrop(EventArgs e)
     {
-        model.Output += "Dropped a file.";
+        //model.Output += "Dropped a file.";
         _dropClasses.Remove(dropTargetDragClass);
         this.StateHasChanged();
         await this.RefreshFileList();
@@ -97,37 +108,51 @@
 
     public async Task ReadFile()
     {
-        model.Output = string.Empty;
+        //model.Output = string.Empty;
         this.StateHasChanged();
         var nl = Environment.NewLine;
         foreach (var file in await dropReference.EnumerateFilesAsync())
         {
             var fileInfo = await file.ReadFileInfoAsync();
-            model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
-            model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
-            model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
-            model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
+            //model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Name)}: {fileInfo.Name}{nl}";
+            //model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Size)}: {fileInfo.Size}{nl}";
+            //model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.Type)}: {fileInfo.Type}{nl}";
+            //model.Output += $"{nameof(IFileInfo)}.{nameof(fileInfo.LastModifiedDate)}: {fileInfo.LastModifiedDate?.ToString() ?? "(N/A)"}{nl}";
             this.StateHasChanged();
 
             using (var fs = await file.OpenReadAsync())
             {
                 var bytes = await StreamToByteArray(fs);
-                model.Output += $"Saving file in session...\n";
+                //model.Output += $"Saving file in session...\n";
 
-                model.Output += $"Reading file...\n";
+                //model.Output += $"Reading file...\n";
 
                 this.StateHasChanged();
 
                 model.GenerateList(bytes);
 
-                await localStorage.SetItemAsync(key, AppState.Serialize(model));
+                await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
             }
 
-            AppState.ToggleInfo();
+            AppState.ToggleInfo(false);
 
             this.StateHasChanged();
         }
 
+    }
+
+    public async void LoadDefaultFile(string file)
+    {
+        var bytes = await Http.GetByteArrayAsync($"Sample/{file}.xml");
+        model.GenerateList(bytes);
+
+        await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
+
+        AppState.ToggleInfo(false);
+
+        this.StateHasChanged();
+
+        Console.WriteLine("File read");
     }
 
     public async static Task<byte[]> StreamToByteArray(Stream input)

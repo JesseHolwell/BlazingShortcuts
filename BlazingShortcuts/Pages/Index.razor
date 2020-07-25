@@ -13,15 +13,15 @@
             {
                 <div class="col-12 col-lg-6">
 
-                    <div class="d-flex flex-column justify-content-between min-vh-100">
+                    <div class="d-flex flex-column justify-content-between vh-100">
                         <div>
-                            <Nav />
+                            <Navbar />
                         </div>
                         <div>
-                            <Text />
+                            <KeyEvents />
                         </div>
                         <div>
-                            <Map />
+                            <KeyboardMap />
                         </div>
                     </div>
 
@@ -29,7 +29,9 @@
             }
 
             <div class="col-12 @(AppState.Fullscreen ? "col-lg-12" : "col-lg-6")">
-                <List />
+                <div class="vh-100 overflow-scroll">
+                    <MainPanel />
+                </div>
             </div>
 
         </div>
@@ -54,4 +56,7 @@
 }
 
 <style>
+    .overflow-scroll {
+        overflow-y: auto;
+    }
 </style>

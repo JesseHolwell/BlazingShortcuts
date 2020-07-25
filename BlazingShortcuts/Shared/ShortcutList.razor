@@ -1,0 +1,82 @@
+﻿@inject AppState AppState
+@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+}
+
+
+<div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
+    @foreach (var scope in model.Scope)
+    {
+        if (scope.HasMatch && scope.Visible || AppState.Configure)
+        {
+            <div class="stone">
+                <div>
+                    <span>@scope.Name</span>
+                    @if (AppState.Configure)
+                    {
+                        if (scope.Visible)
+                        {
+                            <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-danger">hide</button>
+                        }
+                        else
+                        {
+                            <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-primary">show</button>
+                        }
+                    }
+                </div>
+                <div class="key-group">
+                    <div class="shortcuts row">
+                        @foreach (var binding in scope.Bindings)
+                        {
+                            @if (binding.IsMatch && binding.Visible || AppState.Configure)
+                            {
+                                <div class="col-6">
+                                    @binding.DisplayName
+                                    @if (AppState.Configure)
+                                    {
+                                        if (binding.Visible)
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="@(() => ToggleDisplay(binding))">hide</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ToggleDisplay(binding))">show</button>
+                                        }
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    <div class="shortcut">@binding.Shortcut</div>
+                                </div>
+                            }
+
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+
+    public async Task Toggle(Scope scope)
+    {
+        scope.Visible = !scope.Visible;
+        model.Scope = model.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
+        this.StateHasChanged();
+    }
+
+    //public async Task Display(Scope scope)
+    //{
+    //    model.Scope.ForEach(x => x.Current = false);
+    //    scope.Current = true;
+    //    this.StateHasChanged();
+    //}
+
+    public async Task ToggleDisplay(Binding binding)
+    {
+        binding.Visible = !binding.Visible;
+        this.StateHasChanged();
+    }
+
+}

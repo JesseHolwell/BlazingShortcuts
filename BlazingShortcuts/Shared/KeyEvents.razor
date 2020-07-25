@@ -1,0 +1,115 @@
+﻿@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+}
+
+<div class="text-center">
+    <div>
+        @*<h2>Ctrl + E, Ctrl + D</h2>*@
+        <h2>@chord@keybind</h2>
+    </div>
+    <div>
+        <input @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@keybind" />
+    </div>
+
+    @keys
+</div>
+
+
+@code {
+
+    public bool isCtrlDown = false;
+    public bool isShiftDown = false;
+    public bool isAltDown = false;
+
+    public string downKey;
+
+    public string keys;
+    public string keybind;
+    public string chord;
+    //public List<Keys> KeyHistory = new List<Keys>();
+
+    public string mod;
+    public string key;
+
+    public async Task KeyDown(KeyboardEventArgs args)
+    {
+        if (args.Repeat)
+            return;
+
+        if (!isCtrlDown && !isAltDown && !isShiftDown && downKey == null && !string.IsNullOrEmpty(chord))
+        {
+            if (chord.Contains(","))
+                chord = string.Empty;
+            else
+                keybind += ", ";
+        }
+
+        if (args.CtrlKey || args.AltKey || args.ShiftKey)
+        {
+            if (args.CtrlKey && !isCtrlDown)
+            {
+                isCtrlDown = true;
+                keybind += "Ctrl + ";
+            }
+            else if (args.AltKey && !isAltDown)
+            {
+                isAltDown = true;
+                keybind += "Alt + ";
+            }
+            else if (args.ShiftKey && !isShiftDown)
+            {
+                isShiftDown = true;
+                keybind += "Shift + ";
+            }
+        }
+
+        if (args.Key != "Control" && args.Key != "Shift" && args.Key != "Alt")
+            keybind += args.Key.ToUpper();
+
+        //foreach (var v in model.Scope)
+        //{
+        //    foreach (var y in v.Bindings)
+        //    {
+        //        //y.Match = (y.Shortcut.StartsWith(KeyHistory));
+        //    }
+        //}
+    }
+
+    public async Task KeyUp(KeyboardEventArgs args)
+    {
+        var shortcut = string.Empty;
+
+        if (args.Key == "Control")
+            isCtrlDown = false;
+        if (args.Key == "Alt")
+            isAltDown = false;
+        if (args.Key == "Shift")
+            isShiftDown = false;
+        if (downKey == args.Key)
+            downKey = null;
+
+        if (args.Key != "Control" && args.Key != "Alt" && args.Key != "Shift")
+        {
+            isCtrlDown = isAltDown = isShiftDown = false;
+            //chord += (args.CtrlKey ? "Ctrl + " : "") + (args.AltKey ? "Alt + " : "") + (args.ShiftKey ? "Shift + " : "") + args.Key.ToUpper();
+            chord += keybind;
+        }
+        keybind = string.Empty;
+
+        await UpdateViewModel(chord);
+        this.StateHasChanged();
+
+    }
+
+    private async Task UpdateViewModel(string chord)
+    {
+        foreach (var v in model.Scope.SelectMany(x=>x.Bindings))
+        {
+            chord = chord.Replace(" ", "");
+            v.IsMatch = (v.Shortcut.StartsWith(chord));
+
+            Console.WriteLine($"{v.IsMatch}:\t{v.Shortcut}\t{chord}");
+        }
+    }
+
+}

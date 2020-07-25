@@ -47,15 +47,17 @@ namespace BlazingShortcuts
 
         private void NotifyStateChanged() => OnChange?.Invoke();
 
-        public string Serialize(BindingsViewModel model)
+        public string Serialize(List<Scope> model)
         {
             string output = JsonSerializer.Serialize(model);
+            Console.WriteLine(output);
             return output;
         }
 
-        public BindingsViewModel Deserialize(string input)
+        public List<Scope> Deserialize(string input)
         {
-            var output = JsonSerializer.Deserialize<BindingsViewModel>(input);
+            var output = JsonSerializer.Deserialize<List<Scope>>(input);
+            Console.WriteLine(input);
             return output;
         }
     }
