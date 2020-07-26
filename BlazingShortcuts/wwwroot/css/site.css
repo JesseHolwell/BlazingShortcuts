@@ -47,6 +47,14 @@ app {
             text-overflow: ellipsis;
         }
 
+.container-fluid {
+    padding:0;
+}
+
+.flex-transition {
+    transition: flex 2s;
+}
+
 .content-sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
@@ -237,10 +245,10 @@ app {
         top: 0;
     }
 
-    .main > div {
+/*    .main > div {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
-    }
+    }*/
 
     .navbar-toggler {
         display: none;

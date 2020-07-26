@@ -19,7 +19,7 @@
             {
                 <div class="stone">
                     <div>
-                        <span>@scope.Name</span>
+                        <span><strong style="color:dodgerblue">@scope.Name</strong></span>
                         @if (AppState.Configure)
                         {
                             if (scope.Visible)
@@ -41,7 +41,7 @@
                                    || AppState.Configure)
                                 {
                                     <div class="col-6">
-                                        @binding.DisplayName
+                                        <strong>@binding.DisplayName</strong>
                                         @if (AppState.Configure)
                                         {
                                             if (binding.Visible)
