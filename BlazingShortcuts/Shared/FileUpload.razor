@@ -133,7 +133,7 @@
 
                 this.StateHasChanged();
 
-                model.GenerateList(bytes);
+                await model.GenerateList(bytes);
 
                 await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
             }
@@ -148,7 +148,7 @@
     public async void LoadDefaultFile(string file)
     {
         var bytes = await Http.GetByteArrayAsync($"Sample/{file}.xml");
-        model.GenerateList(bytes);
+        await model.GenerateList(bytes);
 
         await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
 

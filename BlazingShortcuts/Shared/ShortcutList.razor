@@ -3,73 +3,72 @@
     [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
 }
 
+<div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
 
-    <div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
+    @if (AppState.Searching && !model.Scope.Any(x => x.HasMatch))
+    {
+        <h3>No match found</h3>
+    }
 
-        @if (AppState.Searching && !model.Scope.Any(x=>x.HasMatch))
+    @foreach (var scope in model.Scope)
+    {
+        if ((AppState.Searching && scope.HasMatch && scope.Visible)
+            || (!AppState.Searching && scope.Visible)
+            || AppState.Configure)
         {
-            <h3>No match found</h3>
-        }
-
-        @foreach (var scope in model.Scope)
-        {
-            if ((AppState.Searching && scope.HasMatch && scope.Visible)
-                || (!AppState.Searching && scope.Visible)
-                || AppState.Configure)
-            {
-                <div class="stone">
-                    <div>
-                        <span><strong style="color:dodgerblue">@scope.Name</strong></span>
-                        @if (AppState.Configure)
+            <div class="stone">
+                <div>
+                    <span><strong style="color:dodgerblue">@scope.Name</strong></span>
+                    @if (AppState.Configure)
+                    {
+                        if (scope.Visible)
                         {
-                            if (scope.Visible)
+                            <button @onclick="@(() => ToggleScope(scope))" class="btn btn-outline-danger">hide</button>
+                        }
+                        else
+                        {
+                            <button @onclick="@(() => ToggleScope(scope))" class="btn btn-outline-primary">show</button>
+                        }
+                    }
+                </div>
+                <div class="key-group">
+                    <div class="shortcuts row">
+                        @foreach (var binding in scope.Bindings)
+                        {
+                            @if ((AppState.Searching && binding.IsMatch && binding.Visible)
+                              || (!AppState.Searching && binding.Visible)
+                              || AppState.Configure)
                             {
-                                <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-danger">hide</button>
+                                <div class="col-6">
+                                    <strong>@binding.DisplayName</strong>
+                                    @if (AppState.Configure)
+                                    {
+                                        if (binding.Visible)
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="@(() => ToggleBinding(binding, scope))">hide</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ToggleBinding(binding, scope))">show</button>
+                                        }
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    <div class="shortcut">@binding.ShortcutKeys.ToString()</div>
+                                </div>
                             }
-                            else
-                            {
-                                <button @onclick="@(() => Toggle(scope))" class="btn btn-outline-primary">show</button>
-                            }
+
                         }
                     </div>
-                    <div class="key-group">
-                        <div class="shortcuts row">
-                            @foreach (var binding in scope.Bindings)
-                            {
-                                @if ((AppState.Searching && binding.IsMatch && binding.Visible)
-                                   || (!AppState.Searching && binding.Visible)
-                                   || AppState.Configure)
-                                {
-                                    <div class="col-6">
-                                        <strong>@binding.DisplayName</strong>
-                                        @if (AppState.Configure)
-                                        {
-                                            if (binding.Visible)
-                                            {
-                                                <button class="btn btn-sm btn-outline-danger" @onclick="@(() => ToggleDisplay(binding))">hide</button>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-sm btn-outline-primary" @onclick="@(() => ToggleDisplay(binding))">show</button>
-                                            }
-                                        }
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="shortcut">@binding.Shortcut</div>
-                                    </div>
-                                }
-
-                            }
-                        </div>
-                    </div>
                 </div>
-            }
+            </div>
         }
-    </div>
+    }
+</div>
 
 @code {
 
-    public async Task Toggle(Scope scope)
+    public async Task ToggleScope(Scope scope)
     {
         scope.Visible = !scope.Visible;
         model.Scope = model.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
@@ -83,9 +82,10 @@
     //    this.StateHasChanged();
     //}
 
-    public async Task ToggleDisplay(Binding binding)
+    public async Task ToggleBinding(Binding binding, Scope scope)
     {
         binding.Visible = !binding.Visible;
+        scope.Bindings = scope.Bindings.OrderByDescending(x => x.Visible).ThenBy(x => x.DisplayName).ToList();
         this.StateHasChanged();
     }
 

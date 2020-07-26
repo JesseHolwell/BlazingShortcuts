@@ -11,11 +11,6 @@ namespace BlazingShortcuts
 {
     public class BindingsViewModel
     {
-
-        //public string Output { get; set; }
-
-        //public static int ShortcutCount = 0;
-
         public BindingsViewModel()
         {
             this.Scope = new List<Scope>();
@@ -23,32 +18,14 @@ namespace BlazingShortcuts
 
         public List<Scope> Scope { get; set; }
 
-        //public string Save()
-        //{
-        //    return "";
-        //}
-
-        //public void Load(string input)
-        //{
-
-        //}
-
         public void Reset()
         {
             Scope = new List<Scope>();
         }
 
-        //make this whole thing work by (de)serializing the viewmodel instead of storing the xml file
-        //public async byte[] ToByteArray()
-        //{
-        //}
         public async Task GenerateList(byte[] file)
         {
             Reset();
-            //ShortcutCount = 0;
-
-            //Output += $"Generating...";
-            //this.StateHasChanged();
 
             XmlDocument doc = new XmlDocument();
             string xml = Encoding.UTF8.GetString(file);
@@ -61,29 +38,20 @@ namespace BlazingShortcuts
 
             XmlNodeList nodes = doc.DocumentElement.GetElementsByTagName("command");
 
-            //Output += $"nodes found {nodes.Count}";
-            //this.StateHasChanged();
-
             foreach (XmlNode node in nodes)
             {
                 var name = node.Attributes["name"].Value;
                 var shortcut = node.Attributes["shortcut"].Value;
 
-                //if (string.IsNullOrEmpty(name))
-                //    continue;
+                CreateBinding(this, name, shortcut);
 
-                Binding prev = new Binding();
+                //Binding prev = new Binding();
 
-                Binding binding = prev.FullName == name ? prev : CreateBinding(this, name, shortcut);
+                //Binding binding = prev.FullName == name ? prev : CreateBinding(this, name, shortcut);
+                //could  set this up to put matching shortcuts under the same name
 
-                //if (!binding.Shortcuts.Contains(shortcut)) // ?
-                //    prev.Shortcuts.Add(shortcut);
-
-                //prev = binding; //TODO: ?
-                //ShortcutCount += 1;
             }
 
-            Scope.First().Visible = true;
         }
 
         private static Binding CreateBinding(BindingsViewModel model, string name, string shortcut)
@@ -97,7 +65,6 @@ namespace BlazingShortcuts
                 model.Scope.Add(new Scope() { Name = prefix });
 
             model.Scope.Single(x => x.Name == prefix).Bindings.Add(binding);
-            //dic[prefix].Add(binding);
 
             return binding;
         }
@@ -110,12 +77,10 @@ namespace BlazingShortcuts
             for (int i = 1; i < name.Length; i++)
             {
                 char c = name[i];
-
                 if (char.IsUpper(c) && !char.IsUpper(name[i - 1]))
                 {
                     sb.Append(" ");
                 }
-
                 sb.Append(c);
             }
 
@@ -125,11 +90,6 @@ namespace BlazingShortcuts
 
     public class Scope
     {
-        //public Scope()
-        //{
-        //    this.Bindings 
-        //}
-
         public string Name { get; set; }
 
         public List<Binding> Bindings { get; set; } = new List<Binding>();
@@ -141,53 +101,69 @@ namespace BlazingShortcuts
 
     public class Binding
     {
+        public Binding() { }
         public Binding(string name, string displayName, string shortcut)
         {
             FullName = name;
             DisplayName = displayName;
-            Shortcut = shortcut;
-            //ShortcutKeys = GetKeys(shortcut);
+            //Shortcut = shortcut;
+            ShortcutKeys = new Shortcut(shortcut);
         }
-
-        public Binding()
-        {
-            FullName = string.Empty;
-        }
-
-        //private List<Keys> GetKeys(string shortcut)
-        //{
-        //    var x = new List<Keys>();
-        //    foreach (var v in shortcut.Split(','))
-        //    {
-        //        var keys = new Keys();
-        //        var z = v.Split('+');
-        //        if (z.Length > 1)
-        //        {
-        //            keys.Modifier = z[0];
-        //            keys.Key = z[1];
-        //        }
-        //        else
-        //        {
-        //            keys.Key = z[0];
-        //        }
-        //        x.Add(keys);
-        //    }
-        //    return x;
-        //}
 
         public string FullName { get; set; }
         public string DisplayName { get; set; }
-        public string Shortcut { get; set; } //= new List<string>(); //TODO: change from list to single shortcut, add multiple bindings for multiple shortcuts
-        //public List<Keys> ShortcutKeys { get; set; }
+        //public string Shortcut { get; set; } //= new List<string>(); //TODO: change from list to single shortcut, add multiple bindings for multiple shortcuts
+        public Shortcut ShortcutKeys { get; set; }
 
         public bool Visible { get; set; } = true;
         public bool IsMatch { get; set; } = false;
     }
 
-    //public class Keys
-    //{
-    //    public string Key { get; set; }
+    public class Shortcut
+    {
+        public Shortcut() { }
+        public Shortcut(string shortcut)
+        {
+            foreach (var v in shortcut.Split(','))
+            {
+                var keys = new Keys();
+                foreach (var z in v.Split('+'))
+                {
+                    if (z == "Ctrl")
+                        keys.Control = true;
+                    else if (z == "Alt")
+                        keys.Alt = true;
+                    else if (z == "Shift")
+                        keys.Shift = true;
+                    else
+                        keys.Key = z;
+                }
 
-    //    public string Modifier { get; set; }
-    //}
+                ShortcutKeys.Add(keys);
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Join(", ", ShortcutKeys);
+        }
+
+        public List<Keys> ShortcutKeys { get; set; } = new List<Keys>();
+
+    }
+
+    public class Keys
+    {
+        public string Key { get; set; }
+
+        public bool Control { get; set; }
+        public bool Alt { get; set; }
+        public bool Shift { get; set; }
+
+        public override string ToString()
+        {
+            return (Control ? "Ctrl + " : "") + (Alt ? "Alt + " : "") + (Shift ? "Shift + " : "") + Key; 
+        }
+
+    }
 }

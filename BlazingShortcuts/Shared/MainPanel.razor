@@ -56,7 +56,7 @@ else
 {
     <div class="headerish">
         <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
-        <button @onclick="@(() => Save())" class="btn btn-outline-primary" disabled>Save</button>
+        <button @onclick="@(() => Save())" class="btn btn-outline-primary" >Save</button>
         <button @onclick="@(() => Reset())" class="btn btn-outline-primary">Reset</button>
         @*<button @onclick="@(() => SortByName())" class="btn btn-outline-primary">Sort by name</button>
         <button @onclick="@(() => SortByBinding())" class="btn btn-outline-primary">Sort by keybind</button>*@
@@ -109,7 +109,7 @@ else
 
     public async Task Save()
     {
-
+        await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
     }
 
     public async Task Reset()
@@ -142,9 +142,9 @@ else
         {
 
             if (SortByBindingAscending)
-                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.Shortcut).ToList();
+                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.ShortcutKeys.ToString()).ToList();
             else
-                Scope.Bindings = Scope.Bindings.OrderBy(x => x.Shortcut).ToList();
+                Scope.Bindings = Scope.Bindings.OrderBy(x => x.ShortcutKeys.ToString()).ToList();
         }
 
         SortByBindingAscending = !SortByBindingAscending;
