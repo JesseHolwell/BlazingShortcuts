@@ -121,7 +121,19 @@ namespace BlazingShortcuts
 
     public class Shortcut
     {
-        public Shortcut() { }
+        public Shortcut() {
+            while (ShortcutKeys.Count() < 2)
+            {
+                ShortcutKeys.Add(new Keys());
+            }
+        }
+
+        public Shortcut(Keys k1, Keys k2)
+        {
+            ShortcutKeys.Add(k1);
+            ShortcutKeys.Add(k2);
+        }
+
         public Shortcut(string shortcut)
         {
             foreach (var v in shortcut.Split(','))
@@ -145,10 +157,18 @@ namespace BlazingShortcuts
 
         public override string ToString()
         {
-            return string.Join(", ", ShortcutKeys);
+            var output = string.Empty;
+            var key1 = ShortcutKeys.FirstOrDefault()?.ToString() ?? "";
+            var key2 = ShortcutKeys.LastOrDefault()?.ToString() ?? "";
+            output += !string.IsNullOrWhiteSpace(key1) ? key1 : "";
+            output += !string.IsNullOrWhiteSpace(key2) ? (", " + key2) : "";
+            return output;
         }
 
         public List<Keys> ShortcutKeys { get; set; } = new List<Keys>();
+
+        public Keys Keys1 => ShortcutKeys[0];
+        public Keys Keys2 => ShortcutKeys[1];
 
     }
 
@@ -162,7 +182,7 @@ namespace BlazingShortcuts
 
         public override string ToString()
         {
-            return (Control ? "Ctrl + " : "") + (Alt ? "Alt + " : "") + (Shift ? "Shift + " : "") + Key; 
+            return (Control ? "Ctrl + " : "") + (Alt ? "Alt + " : "") + (Shift ? "Shift + " : "") + (!string.IsNullOrEmpty(Key) ? Key : "");
         }
 
     }

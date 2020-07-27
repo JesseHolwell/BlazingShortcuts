@@ -14,7 +14,7 @@
         <h2>@shortcut.ToString()</h2>
     </div>
     <div>
-        <input @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@keybind" />
+        <input @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@shortcut.ToString()" />
         <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger">Clear</button>
     </div>
 </div>
@@ -32,62 +32,80 @@
     public bool isChord;
     public bool directMatch;
 
-    public Shortcut shortcut = new Shortcut();
+    public bool currentState;
+    public int current => Convert.ToInt32(currentState);
     public Keys keys = new Keys();
+    public Keys keys2 = new Keys();
+    public Shortcut shortcut = new Shortcut();
+
+    protected override async Task OnInitializedAsync()
+    {
+        shortcut.ShortcutKeys.Add(keys);
+        shortcut.ShortcutKeys.Add(keys2);
+        //keysCurrent = 0;
+    }
 
     public async Task KeyDown(KeyboardEventArgs args)
     {
         if (args.Repeat || args.Key == "escape")
             return;
 
-        if (!shortcut.ShortcutKeys.Contains(keys))
-            shortcut.ShortcutKeys.Add(keys);
+        //if (!shortcut.ShortcutKeys.Contains(keys))
+        //    shortcut.ShortcutKeys.Add(keys);
 
         //if its a new shortcut
-        if (!isCtrlDown && !isAltDown && !isShiftDown && !string.IsNullOrEmpty(chord))
-        {
-            if (shortcut.ShortcutKeys.Count() >= 2)
-            {
-                shortcut = new Shortcut();
-                keys = new Keys();
-            }
-            //if (isChord)
-            //if (chord.Contains(","))
-            //{
-            //    chord = string.Empty;
-            //    //isChord = false;
-            //}
-        }
+        //if (!isCtrlDown && !isAltDown && !isShiftDown && !string.IsNullOrEmpty(chord))
+        //{
+        //if (shortcut.ShortcutKeys.Count() >= 2)
+        //{
+        //    shortcut = new Shortcut();
+        //    keys = new Keys();
+        //}
+        //if (isChord)
+        //if (chord.Contains(","))
+        //{
+        //    chord = string.Empty;
+        //    //isChord = false;
+        //}
+        //}
 
         //manage modifier keys
         if (args.CtrlKey || args.AltKey || args.ShiftKey)
         {
-            if (args.CtrlKey && !isCtrlDown)
+            if (args.CtrlKey)
             {
-                isCtrlDown = true;
-                keybind += "Ctrl + ";
+                shortcut.ShortcutKeys[current].Control = true;
+                isCtrlDown = !isCtrlDown;
+                //keybind += "Ctrl + ";
             }
-            else if (args.AltKey && !isAltDown)
+            else if (args.AltKey)
             {
-                isAltDown = true;
-                keybind += "Alt + ";
+                shortcut.ShortcutKeys[current].Alt = true;
+                isAltDown = !isAltDown;
+                //keybind += "Alt + ";
             }
-            else if (args.ShiftKey && !isShiftDown)
+            else if (args.ShiftKey)
             {
-                isShiftDown = true;
-                keybind += "Shift + ";
+                shortcut.ShortcutKeys[current].Shift = true;
+                isShiftDown = !isShiftDown;
+                //keybind += "Shift + ";
             }
         }
 
-        keys.Control = isCtrlDown;
-        keys.Alt = isAltDown;
-        keys.Shift = isShiftDown;
+        //keys.Control = isCtrlDown;
+        //keys.Alt = isAltDown;
+        //keys.Shift = isShiftDown;
 
         if (args.Key != "Control" && args.Key != "Shift" && args.Key != "Alt")
         {
-            keybind += args.Key.ToUpper();
-            keys.Key = args.Key.ToUpper();
+            //keybind += args.Key.ToUpper();
+            shortcut.ShortcutKeys[current].Key = args.Key.ToUpper();
+
+            currentState = !currentState;
+
         }
+
+        await UpdateViewModel(shortcut);
 
         this.StateHasChanged();
     }
@@ -101,30 +119,30 @@
         }
 
         //manage modifier keys
-        if (args.Key == "Control")
-            isCtrlDown = false;
-        if (args.Key == "Alt")
-            isAltDown = false;
-        if (args.Key == "Shift")
-            isShiftDown = false;
+        //if (args.Key == "Control")
+        //    isCtrlDown = false;
+        //if (args.Key == "Alt")
+        //    isAltDown = false;
+        //if (args.Key == "Shift")
+        //    isShiftDown = false;
         else
         //skip this step for modifier key presses
         //if (args.Key != "Control" && args.Key != "Alt" && args.Key != "Shift")
         {
-            isCtrlDown = isAltDown = isShiftDown = false;
-            //chord += (args.CtrlKey ? "Ctrl + " : "") + (args.AltKey ? "Alt + " : "") + (args.ShiftKey ? "Shift + " : "") + args.Key.ToUpper();
-            chord += (string.IsNullOrEmpty(chord) ? "" : ", ") + keybind;
-            keybind = string.Empty;
+            //isCtrlDown = isAltDown = isShiftDown = false;
+            ////chord += (args.CtrlKey ? "Ctrl + " : "") + (args.AltKey ? "Alt + " : "") + (args.ShiftKey ? "Shift + " : "") + args.Key.ToUpper();
+            //chord += (string.IsNullOrEmpty(chord) ? "" : ", ") + keybind;
+            //keybind = string.Empty;
 
-            keys = new Keys();
+            //keys = new Keys();
         }
 
-        keys.Control = isCtrlDown;
-        keys.Alt = isAltDown;
-        keys.Shift = isShiftDown;
+        //keys.Control = isCtrlDown;
+        //keys.Alt = isAltDown;
+        //keys.Shift = isShiftDown;
 
-        await UpdateViewModel(chord);
-        this.StateHasChanged();
+        //await UpdateViewModel(chord);
+        //this.StateHasChanged();
 
     }
 
@@ -141,24 +159,25 @@
         keybind = string.Empty;
         chord = string.Empty;
 
-        await UpdateViewModel(chord);
+        currentState = false;
+
+        await UpdateViewModel(shortcut);
         this.StateHasChanged();
 
     }
 
-    private async Task UpdateViewModel(string chord)
+    private async Task UpdateViewModel(Shortcut shortcut)
     {
-        AppState.IsSearching(!string.IsNullOrEmpty(chord));
+        AppState.IsSearching(!string.IsNullOrEmpty(shortcut.ToString()));
 
         foreach (var v in model.Scope.SelectMany(x => x.Bindings))
         {
-            chord = chord.Replace(" ", "");
-            v.IsMatch = (v.ShortcutKeys.ToString().StartsWith(chord));
+            v.IsMatch = (v.ShortcutKeys.ToString().StartsWith(shortcut.ToString()));
 
-            if (v.ShortcutKeys.ToString() == chord)
-                directMatch = true;
+            //if (v.ShortcutKeys.ToString() == chord)
+            //    directMatch = true;
 
-            Console.WriteLine($"{v.IsMatch}:\t{v.ShortcutKeys.ToString()}\t{chord}");
+            Console.WriteLine($"{v.IsMatch}:\t{v.ShortcutKeys.ToString()}\t{shortcut.ToString()}");
         }
     }
 
