@@ -2,7 +2,7 @@
     <div class="keyboard">
 
         <div class="section-a">
-            <div class="function-keys">
+            <div>
                 <div class="key function space1">
                     Esc
                 </div>
@@ -46,6 +46,8 @@
                     F12
                 </div>
             </div>
+
+            <br /><br />
 
             <div>
                 <!--END FUNCTION KEYS -->
@@ -94,6 +96,7 @@
                 </div>
             </div>
 
+            <br /><br />
             <!--END NUMBER KEYS -->
 
             <div>
@@ -142,6 +145,8 @@
                 </div>
             </div>
 
+            <br /><br />
+
             <div>
                 <div class="key caps">
                     Caps<br>Lock
@@ -184,6 +189,8 @@
                 </div>
             </div>
 
+            <br /><br />
+
             <div>
                 <div class="key shift left">
                     Shift
@@ -220,6 +227,8 @@
                 </div>
             </div>
 
+            <br /><br />
+
             <div>
                 <div class="key ctrl">
                     Ctrl
@@ -249,20 +258,19 @@
         </div>
 
         <div class="section-b">
-            <div class="utility-keys">
-                <div class="key function small">
-                    Prnt Scrn
-                </div>
-                <div class="key function small">
-                    Scroll Lock
-                </div>
-                <div class="key function small">
-                    Pause Break
-                </div>
+            <div class="key function small">
+                Prnt Scrn
+            </div>
+            <div class="key function small">
+                Scroll Lock
+            </div>
+            <div class="key function small">
+                Pause Break
             </div>
 
+            <br /><br />
 
-
+            <div class="sec-func">
                 <div class="key">
                     Insert
                 </div>
@@ -273,7 +281,8 @@
                     Page Up
                 </div>
 
-            <div class="social-distance">
+                <br /><br />
+
                 <div class="key">
                     Del
                 </div>
@@ -284,6 +293,8 @@
                     Page Down
                 </div>
             </div><!-- end arrows -->
+
+            <br /><br /><br />
 
             <div class="arrows">
                 <div>
@@ -318,96 +329,16 @@
 <br />
 
 <style>
-
-    .keyboard {
-        width: 100%;
-        /*        height: 320px;*/
-        background-color: #111;
-        margin: 0px auto;
-        border-radius: 9px;
-        padding: 30px;
-        color: #eee;
-        display: inline-flex;
-    }
-
-    .section-a {
-        width: 80%;
-        margin-right: 5%;
-    }
-
-    .section-b {
-        width: 20%;
-    }
-
-    .key {
-        width: 7%;
-        height: 48px;
-        background-color: #333;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: box-shadow 0.7s ease;
-        float: left;
-        background-clip: content-box;
-        padding: 2px;
-        font-size:0.8rem;
-    }
-
-    .section-b .key {
-        width: 33%;
-    }
-
-
-
-    .backspace.key, .tab.key {
-        width: 9%;
-    }
-
-    .caps.key {
-        width: 10%;
-    }
-
-    .enter.key {
-        width: 13%;
-    }
-
-    .shift.key {
-        width: 15%;
-    }
-
-    .space.key {
-        width: 51%;
-    }
-
-    .space1 {
-        margin-right: 5%;
-    }
-
-    .space2 {
-        margin-right: 2%;
-    }
-
-    .function {
-        margin-bottom: 5px;
-    }
-
-    .social-distance .key {
-        margin-bottom: 48px;
-    }
-
-    .hidden.key {
-        visibility:hidden;
-    }
-
-    /*::selection {
+    ::selection {
         background-color: none;
         color: inherit;
-    }*/
+    }
 
-    /*    body {
+/*    body {
         background-color: #14B524;
     }*/
 
-    /*.keyboard {
+    .keyboard {
         height: 320px;
         background-color: #111;
         margin: 0px auto;
@@ -558,7 +489,7 @@
     .key:hover {
         box-shadow: 0px 0px 10px #3a0647;
         z-index: 1000;
-    }*/
+    }
 </style>
 
 
