@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -186,9 +187,9 @@ namespace BlazingShortcuts
 
         public override string ToString()
         {
-            return (Control ? "Ctrl&nbsp;+&nbsp;" : "")
-                + (Alt ? "Alt&nbsp;+&nbsp;" : "")
-                + (Shift ? "Shift&nbsp;+&nbsp;" : "")
+            return (Control ? "Ctrl + " : "")
+                + (Alt ? "Alt + " : "")
+                + (Shift ? "Shift + " : "")
                 + (!string.IsNullOrEmpty(Key) ? Key : "");
         }
 
@@ -211,6 +212,22 @@ namespace BlazingShortcuts
 
         public Dictionary<Key, KeyboardKeyModel> Keys { get; set; }
             = new Dictionary<Key, KeyboardKeyModel>();
+
+        public void ResetPressed()
+        {
+            foreach (var v in Keys)
+            {
+                v.Value.IsPressed = false;
+            }
+        }
+
+        public void ResetAvailable()
+        {
+            foreach (var v in Keys)
+            {
+                v.Value.IsAvailable = false;
+            }
+        }
 
     }
 

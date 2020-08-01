@@ -10,12 +10,12 @@
             <h2 class="d-none d-md-block">Click here and press some keys</h2>
             <h2 class="d-block d-md-none">Press some keys</h2>
         }
-        <h2>@((MarkupString)shortcut.ToString())</h2>
+        <h2>@(shortcut.ToString())</h2>
     </div>
     <div class="d-none d-md-block">
 
         <div class="input-group mb-3">
-            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@((MarkupString)shortcut.ToString())" >
+            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@(shortcut.ToString())" >
             <div class="input-group-append">
                 <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger" type="button">Clear</button>
             </div>
@@ -108,9 +108,17 @@
 
             currentState = !currentState;
 
+            model.Keyboard.ResetPressed();
+
         }
 
         await UpdateViewModel(shortcut);
+
+        //var keyEnum = (Key)Enum.Parse(typeof(Key), args.Key);
+
+        var keyEnum = GetKeyFromString(args.Key);
+        if (keyEnum.HasValue)
+            model.Keyboard.Keys[keyEnum.Value].IsPressed = true;
 
         this.StateHasChanged();
     }
@@ -166,6 +174,9 @@
 
         currentState = false;
 
+        model.Keyboard.ResetAvailable();
+        model.Keyboard.ResetPressed();
+
         await UpdateViewModel(shortcut);
         this.StateHasChanged();
 
@@ -175,15 +186,73 @@
     {
         AppState.IsSearching(!string.IsNullOrEmpty(shortcut.ToString()));
 
+        model.Keyboard.ResetAvailable();
+
         foreach (var v in model.Scope.SelectMany(x => x.Bindings))
         {
-            v.IsMatch = (v.ShortcutKeys.ToString().StartsWith(shortcut.ToString()));
+            v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().StartsWith(shortcut.ToString()));
+
+            if (v.IsMatch)
+            {
+                var hey = v.ShortcutKeys.ToString().Substring(shortcut.ToString().Length);
+
+                var you = hey.Split(',').FirstOrDefault();
+
+                var are = you.Trim().Split('+').FirstOrDefault().Trim();
+
+                var keyEnum = GetKeyFromString(are);
+                if (keyEnum.HasValue)
+                    model.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
+            }
+
+            //get available keys
 
             //if (v.ShortcutKeys.ToString() == chord)
             //    directMatch = true;
 
-            Console.WriteLine($"{v.IsMatch}:\t{v.ShortcutKeys.ToString()}\t{shortcut.ToString()}");
+            //Console.WriteLine($"{v.IsMatch}:\t{v.ShortcutKeys.ToString()}\t{shortcut.ToString()}");
         }
+    }
+
+    public Key? GetKeyFromString(string key)
+    {
+        key = key.ToLower();
+        Key? keyEnum = null;
+
+        if (key == "`") keyEnum = Key.Tilde;
+        else if (key == "1") keyEnum = Key.Num1;
+        else if (key == "2") keyEnum = Key.Num2;
+        else if (key == "3") keyEnum = Key.Num3;
+        else if (key == "4") keyEnum = Key.Num4;
+        else if (key == "5") keyEnum = Key.Num5;
+        else if (key == "6") keyEnum = Key.Num6;
+        else if (key == "7") keyEnum = Key.Num7;
+        else if (key == "8") keyEnum = Key.Num8;
+        else if (key == "9") keyEnum = Key.Num9;
+        else if (key == "0") keyEnum = Key.Num0;
+        else if (key == "-") keyEnum = Key.Underscore;
+        else if (key == "=") keyEnum = Key.Plus;
+
+        else if (key == "[") keyEnum = Key.CurlyOpen;
+        else if (key == "]") keyEnum = Key.CurlyClose;
+
+        else if (key == ";") keyEnum = Key.Colon;
+        else if (key == "'") keyEnum = Key.Quote;
+
+        else if (key == "shift") keyEnum = Key.LShift;
+        else if (key == ",") keyEnum = Key.Comma;
+        else if (key == ".") keyEnum = Key.Dot;
+        else if (key == "/") keyEnum = Key.Slash;
+
+        else if (key == "control") keyEnum = Key.LCtrl;
+        else if (key == "alt") keyEnum = Key.LAlt;
+
+        else if (key == " ") keyEnum = Key.Space;
+
+        else
+            keyEnum = (Key)Enum.Parse(typeof(Key), key, true);
+
+        return keyEnum;
     }
 
 }
