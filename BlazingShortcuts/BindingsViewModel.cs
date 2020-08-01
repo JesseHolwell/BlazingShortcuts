@@ -14,13 +14,16 @@ namespace BlazingShortcuts
         public BindingsViewModel()
         {
             this.Scope = new List<Scope>();
+            this.Keyboard = new Keyboard();
         }
 
         public List<Scope> Scope { get; set; }
+        public Keyboard Keyboard { get; set; }
 
         public void Reset()
         {
-            Scope = new List<Scope>();
+            this.Scope = new List<Scope>();
+            //this.Keys = new List<KeyboardKeys>();
         }
 
         public async Task GenerateList(byte[] file)
@@ -121,7 +124,8 @@ namespace BlazingShortcuts
 
     public class Shortcut
     {
-        public Shortcut() {
+        public Shortcut()
+        {
             while (ShortcutKeys.Count() < 2)
             {
                 ShortcutKeys.Add(new Keys());
@@ -167,8 +171,8 @@ namespace BlazingShortcuts
 
         public List<Keys> ShortcutKeys { get; set; } = new List<Keys>();
 
-        public Keys Keys1 => ShortcutKeys[0];
-        public Keys Keys2 => ShortcutKeys[1];
+        public Keys Keys1 => ShortcutKeys.Count() >= 1 ? ShortcutKeys[0] : null;
+        public Keys Keys2 => ShortcutKeys.Count() >= 2 ? ShortcutKeys[1] : null;
 
     }
 
@@ -182,8 +186,148 @@ namespace BlazingShortcuts
 
         public override string ToString()
         {
-            return (Control ? "Ctrl + " : "") + (Alt ? "Alt + " : "") + (Shift ? "Shift + " : "") + (!string.IsNullOrEmpty(Key) ? Key : "");
+            return (Control ? "Ctrl&nbsp;+&nbsp;" : "")
+                + (Alt ? "Alt&nbsp;+&nbsp;" : "")
+                + (Shift ? "Shift&nbsp;+&nbsp;" : "")
+                + (!string.IsNullOrEmpty(Key) ? Key : "");
         }
 
+    }
+
+    public class Keyboard
+    {
+        public Keyboard()
+        {
+            foreach (Key key in (Key[])Enum.GetValues(typeof(Key)))
+            {
+                AddKey(key);
+            }
+        }
+
+        public void AddKey(Key key)
+        {
+            Keys.Add(key, new KeyboardKeyModel(key.ToString()));
+        }
+
+        public Dictionary<Key, KeyboardKeyModel> Keys { get; set; }
+            = new Dictionary<Key, KeyboardKeyModel>();
+
+    }
+
+    public class KeyboardKeyModel
+    {
+        public KeyboardKeyModel(string key)
+        {
+            Key = key;
+        }
+        public string Key { get; set; }
+
+        public bool IsPressed { get; set; }
+        public bool IsAvailable { get; set; }
+
+        public void Press()
+        {
+            IsPressed = true;
+        }
+    }
+
+    public enum Key
+    {
+        Escape,
+        F1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+
+        Tilde,
+        Num1,
+        Num2,
+        Num3,
+        Num4,
+        Num5,
+        Num6,
+        Num7,
+        Num8,
+        Num9,
+        Num0,
+        Underscore,
+        Plus,
+        Backspace,
+
+        Tab,
+        Q,
+        W,
+        E,
+        R,
+        T,
+        Y,
+        U,
+        I,
+        O,
+        P,
+        CurlyOpen,
+        CurlyClose,
+        Pipe,
+
+        Caps,
+        A,
+        S,
+        D,
+        F,
+        G,
+        H,
+        J,
+        K,
+        L,
+        Colon,
+        Quote,
+        Enter,
+
+        LShift,
+        Z,
+        X,
+        C,
+        V,
+        B,
+        N,
+        M,
+        Comma,
+        Dot,
+        Slash,
+        RShift,
+
+        LCtrl,
+        LWin,
+        LAlt,
+        Space,
+        RAlt,
+        RWin,
+        Func,
+        RCtrl,
+
+        PrintScreen,
+        ScrollLock,
+        PauseBreak,
+        Insert,
+        Home,
+        PageUp,
+        Delete,
+        End,
+        PageDown,
+
+        Up,
+        Left,
+        Down,
+        Right,
+
+        Hidden,
     }
 }

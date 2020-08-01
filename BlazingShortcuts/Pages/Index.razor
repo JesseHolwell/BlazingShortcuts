@@ -3,7 +3,6 @@
 @inject AppState AppState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-
 <CascadingValue Value="@model" Name="ViewModel">
 
     <div class="main container-fluid overflow-hidden @(AppState.Theme ? "dark" : "light")">

@@ -1,0 +1,22 @@
+﻿@namespace Components
+
+    <div class="key @Classes @(Key.IsPressed ? "pressed" : "") @(Key.IsAvailable ? "available" : "")" @onclick="@(() => Key.Press())">
+        @Key.Key        
+    </div>
+
+@code {
+    //[Parameter]
+    //public string key { get; set; }
+
+    //[Parameter]
+    //public bool IsPressed { get; set; }
+
+    //[Parameter]
+    //public bool IsAvailable { get; set; }
+
+    [Parameter]
+    public KeyboardKeyModel Key { get; set; }
+
+    [Parameter]
+    public string Classes { get; set; }
+}

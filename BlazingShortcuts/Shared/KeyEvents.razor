@@ -7,15 +7,20 @@
     <div>
         @if (!AppState.Searching || string.IsNullOrEmpty(chord) && string.IsNullOrEmpty(keybind))
         {
-            <h2>Click here and press some keys</h2>
+            <h2 class="d-none d-md-block">Click here and press some keys</h2>
+            <h2 class="d-block d-md-none">Press some keys</h2>
         }
-        @*<h2>Ctrl + E, Ctrl + D</h2>*@
-        @*<h2>@chord@keybind</h2>*@
-        <h2>@shortcut.ToString()</h2>
+        <h2>@((MarkupString)shortcut.ToString())</h2>
     </div>
-    <div>
-        <input @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@shortcut.ToString()" />
-        <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger">Clear</button>
+    <div class="d-none d-md-block">
+
+        <div class="input-group mb-3">
+            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@((MarkupString)shortcut.ToString())" >
+            <div class="input-group-append">
+                <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger" type="button">Clear</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
