@@ -125,6 +125,8 @@
 
     public async Task KeyUp(KeyboardEventArgs args)
     {
+        Console.WriteLine("Key:\t" + args.Key);
+
         if (args.Key == "escape")
         {
             await ClearKeys();
@@ -219,7 +221,9 @@
         key = key.ToLower();
         Key? keyEnum = null;
 
-        if (key == "`") keyEnum = Key.Tilde;
+        if (key == "esc") keyEnum = Key.Escape;
+
+        else if (key == "`") keyEnum = Key.Tilde;
         else if (key == "1") keyEnum = Key.Num1;
         else if (key == "2") keyEnum = Key.Num2;
         else if (key == "3") keyEnum = Key.Num3;
@@ -233,8 +237,11 @@
         else if (key == "-") keyEnum = Key.Underscore;
         else if (key == "=") keyEnum = Key.Plus;
 
+        else if (key == "bkspce") keyEnum = Key.Backspace;
+
         else if (key == "[") keyEnum = Key.CurlyOpen;
         else if (key == "]") keyEnum = Key.CurlyClose;
+        else if (key == "\\") keyEnum = Key.Pipe;
 
         else if (key == ";") keyEnum = Key.Colon;
         else if (key == "'") keyEnum = Key.Quote;
@@ -244,8 +251,21 @@
         else if (key == ".") keyEnum = Key.Dot;
         else if (key == "/") keyEnum = Key.Slash;
 
-        else if (key == "control") keyEnum = Key.LCtrl;
+        else if (key == "control" || key == "ctrl") keyEnum = Key.LCtrl;
         else if (key == "alt") keyEnum = Key.LAlt;
+
+        else if (key == "up arrow") keyEnum = Key.Up;
+        else if (key == "left arrow") keyEnum = Key.Left;
+        else if (key == "down arrow") keyEnum = Key.Down;
+        else if (key == "right arrow") keyEnum = Key.Right;
+
+        else if (key == "break") keyEnum = Key.PauseBreak;
+
+        else if (key == "ins") keyEnum = Key.Insert;
+        else if (key == "pgup") keyEnum = Key.PageUp;
+        else if (key == "del") keyEnum = Key.Delete;
+        else if (key == "pgdn") keyEnum = Key.PageDown;
+
 
         else if (key == " ") keyEnum = Key.Space;
 
