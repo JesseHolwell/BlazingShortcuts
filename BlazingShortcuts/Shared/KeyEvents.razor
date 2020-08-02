@@ -192,15 +192,20 @@
 
         foreach (var v in model.Scope.SelectMany(x => x.Bindings))
         {
-            v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().StartsWith(shortcut.ToString()));
+            if (v.DisplayName.ToLower() == "inserttab" || v.DisplayName.ToLower() == "insert tab")
+                Console.WriteLine(shortcut.ToString() + " | " + v.ShortcutKeys.ToString());
+
+            v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().ToLower().StartsWith(shortcut.ToString().ToLower()));
 
             if (v.IsMatch)
             {
                 var hey = v.ShortcutKeys.ToString().Substring(shortcut.ToString().Length);
 
-                var you = hey.Split(',').FirstOrDefault();
+                var you = hey.Split(',');
 
-                var are = you.Trim().Split('+').FirstOrDefault().Trim();
+                var lazy = (you.FirstOrDefault().Length == 0) ? you.LastOrDefault() : you.FirstOrDefault();
+
+                var are = lazy.Trim().Split('+').FirstOrDefault().Trim();
 
                 var keyEnum = GetKeyFromString(are);
                 if (keyEnum.HasValue)

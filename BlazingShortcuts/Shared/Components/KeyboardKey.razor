@@ -1,8 +1,11 @@
 ﻿@namespace Components
+@functions{
+    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+}
 
-    <div class="key @Classes @(Key.IsPressed ? "pressed" : "") @(Key.IsAvailable ? "available" : "")" @onclick="@(() => KeyPress(Key))">
-        @Key.Key        
-    </div>
+<div class="key @Classes @(Key.IsPressed ? "pressed" : "") @(Key.IsAvailable ? "available" : "")" @onclick="@(() => KeyPress(Key))">
+    @Key.Key
+</div>
 
 @code {
     //[Parameter]
@@ -23,6 +26,9 @@
     public async Task KeyPress(KeyboardKeyModel key)
     {
         key.Press();
+
+
+
         this.StateHasChanged();
     }
 }
