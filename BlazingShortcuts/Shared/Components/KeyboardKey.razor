@@ -8,14 +8,6 @@
 </div>
 
 @code {
-    //[Parameter]
-    //public string key { get; set; }
-
-    //[Parameter]
-    //public bool IsPressed { get; set; }
-
-    //[Parameter]
-    //public bool IsAvailable { get; set; }
 
     [Parameter]
     public KeyboardKeyModel Key { get; set; }
@@ -27,8 +19,32 @@
     {
         key.Press();
 
+        if (key.Key == "Escape")
+        {
+            model.Shortcut.Reset();
+            model.Keyboard.ResetAvailable();
+            model.Keyboard.ResetPressed();
+        }
 
+        if (key.Key == "LCtrl")
+            model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
+        else if (key.Key == "LAlt")
+            model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
+        else if (key.Key == "LShift")
+            model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
+        else
+        {
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = key.Key.ToUpper();
 
+            model.Shortcut.currentState = !model.Shortcut.currentState;
+
+            model.Shortcut.IsCtrlDown = false;
+            model.Shortcut.IsAltDown = false;
+            model.Shortcut.IsShiftDown = false;
+
+        }
+
+        await model.UpdateViewModel(model.Shortcut);
         this.StateHasChanged();
     }
 }

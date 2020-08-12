@@ -5,15 +5,27 @@
 }
 
 
-<div class="top-row pl-4 navbar navbar-dark">
+<div class="top-row pl-4 navbar navbar-dark header-navbar">
     <a class="navbar-brand" href="">VS Shortcuts</a>
 
     @*<div>
-        <button>Import</button>
-        <button>Export</button>
-    </div>*@
+            <button>Import</button>
+            <button>Export</button>
+        </div>*@
 
     <div>
+        @if (model.Scope.Any())
+        {
+            <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
+            <button @onclick="@(() => Save())" class="btn btn-outline-primary">Save</button>
+            <button @onclick="@(() => Reset())" class="btn btn-outline-primary">Reset</button>
+            @*<button @onclick="@(() => SortByName())" class="btn btn-outline-primary">Sort by name</button>
+                <button @onclick="@(() => SortByBinding())" class="btn btn-outline-primary">Sort by keybind</button>*@
+            <button @onclick="@(() => ShowAll())" class="btn btn-outline-primary">Show all</button>
+            <button @onclick="@(() => HideAll())" class="btn btn-outline-primary">Hide all</button>
+            <button @onclick="@(() => Fullscreen())" class="btn btn-outline-primary">Fullscreen</button>
+            <button @onclick="@(() => ToggleInfo(true))" class="btn btn-outline-primary">Info</button>
+        }
         <button @onclick="ToggleTheme" class="btn btn-outline-info">
             @if (AppState.Theme)
             {
@@ -30,18 +42,131 @@
 
 @code {
 
-    public string key = "theme";
+    public string themeKey = "theme";
+    public string bindingsKey = "bindings";
 
     protected override async Task OnInitializedAsync()
     {
-        var theme = await localStorage.GetItemAsync<bool>(key);
+        var theme = await localStorage.GetItemAsync<bool>(themeKey);
         AppState.ToggleTheme(theme);
+        await Initialize();
+    }
+
+    private async Task Initialize()
+    {
+        var cereal = await localStorage.GetItemAsync<string>(bindingsKey);
+
+        if (cereal != null)
+        {
+            Console.WriteLine("Eating cereal");
+
+            //model.Output += "Generating list from session storage\n";
+            //this.StateHasChanged();
+
+            //await model.GenerateList(bytes);
+            model.Scope = AppState.Deserialize(cereal);
+            Console.WriteLine("Ate cereal");
+            //this.StateHasChanged();
+
+            Console.WriteLine("Cereal eaten successfully");
+        }
+        else
+        {
+            //model.Output += "no found file\n";
+            this.StateHasChanged();
+        }
+    }
+
+    public async Task Configure()
+    {
+        AppState.ToggleConfigure();
+    }
+
+    public async Task Save()
+    {
+        await localStorage.SetItemAsync(bindingsKey, AppState.Serialize(model.Scope));
+    }
+
+    public async Task Reset()
+    {
+        await Initialize();
+    }
+
+    public bool SortByNameAscending = true;
+    public bool SortByBindingAscending = true;
+
+    public async Task SortByName()
+    {
+        foreach (var Scope in model.Scope)
+        {
+            if (SortByNameAscending)
+                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.DisplayName).ToList();
+            else
+                Scope.Bindings = Scope.Bindings.OrderBy(x => x.DisplayName).ToList();
+        }
+
+        SortByNameAscending = !SortByNameAscending;
+        SortByBindingAscending = false;
+
+        this.StateHasChanged();
+    }
+
+    public async Task SortByBinding()
+    {
+        foreach (var Scope in model.Scope)
+        {
+
+            if (SortByBindingAscending)
+                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.ShortcutKeys.ToString()).ToList();
+            else
+                Scope.Bindings = Scope.Bindings.OrderBy(x => x.ShortcutKeys.ToString()).ToList();
+        }
+
+        SortByBindingAscending = !SortByBindingAscending;
+        SortByNameAscending = false;
+
+        this.StateHasChanged();
+    }
+
+    public async Task HideAll()
+    {
+        foreach (var Scope in model.Scope)
+        {
+            Scope.Visible = false;
+
+            foreach (var Binding in Scope.Bindings)
+                Binding.Visible = false;
+        }
+        this.StateHasChanged();
+    }
+
+    public async Task ShowAll()
+    {
+        foreach (var Scope in model.Scope)
+        {
+            Scope.Visible = true;
+
+            foreach (var Binding in Scope.Bindings)
+                Binding.Visible = true;
+        }
+        this.StateHasChanged();
+    }
+
+    public async Task Fullscreen()
+    {
+        AppState.ToggleFullscreen();
+    }
+
+    public async Task ToggleInfo(bool? toggle = null)
+    {
+        if (model.Scope.Any())
+            AppState.ToggleInfo(toggle);
     }
 
     async Task ToggleTheme()
     {
         var theme = AppState.ToggleTheme();
-        await localStorage.SetItemAsync(key, theme);
+        await localStorage.SetItemAsync(themeKey, theme);
     }
 
 }

@@ -16,10 +16,13 @@ namespace BlazingShortcuts
         {
             this.Scope = new List<Scope>();
             this.Keyboard = new Keyboard();
+            this.Shortcut = new Shortcut();
         }
 
         public List<Scope> Scope { get; set; }
         public Keyboard Keyboard { get; set; }
+
+        public Shortcut Shortcut { get; set; }
 
         public void Reset()
         {
@@ -90,6 +93,95 @@ namespace BlazingShortcuts
 
             return sb.ToString();
         }
+
+        public async Task UpdateViewModel(Shortcut shortcut)
+        {
+            //AppState.IsSearching(!string.IsNullOrEmpty(shortcut.ToString()));
+
+            this.Keyboard.ResetAvailable();
+
+            foreach (var v in this.Scope.SelectMany(x => x.Bindings))
+            {
+                if (v.DisplayName.ToLower() == "inserttab" || v.DisplayName.ToLower() == "insert tab")
+                    Console.WriteLine(shortcut.ToString() + " | " + v.ShortcutKeys.ToString());
+
+                v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().ToLower().StartsWith(shortcut.ToString().ToLower()));
+
+                if (v.IsMatch)
+                {
+                    var hey = v.ShortcutKeys.ToString().Substring(shortcut.ToString().Length);
+
+                    var you = hey.Split(',');
+
+                    var lazy = (you.FirstOrDefault().Length == 0) ? you.LastOrDefault() : you.FirstOrDefault();
+
+                    var are = lazy.Trim().Split('+').FirstOrDefault().Trim();
+
+                    var keyEnum = GetKeyFromString(are);
+                    if (keyEnum.HasValue)
+                        this.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
+                }
+            }
+        }
+
+        public Key? GetKeyFromString(string key)
+        {
+            key = key.ToLower();
+            Key? keyEnum = null;
+
+            if (key == "esc") keyEnum = Key.Escape;
+
+            else if (key == "`") keyEnum = Key.Tilde;
+            else if (key == "1") keyEnum = Key.Num1;
+            else if (key == "2") keyEnum = Key.Num2;
+            else if (key == "3") keyEnum = Key.Num3;
+            else if (key == "4") keyEnum = Key.Num4;
+            else if (key == "5") keyEnum = Key.Num5;
+            else if (key == "6") keyEnum = Key.Num6;
+            else if (key == "7") keyEnum = Key.Num7;
+            else if (key == "8") keyEnum = Key.Num8;
+            else if (key == "9") keyEnum = Key.Num9;
+            else if (key == "0") keyEnum = Key.Num0;
+            else if (key == "-") keyEnum = Key.Underscore;
+            else if (key == "=") keyEnum = Key.Plus;
+
+            else if (key == "bkspce") keyEnum = Key.Backspace;
+
+            else if (key == "[") keyEnum = Key.CurlyOpen;
+            else if (key == "]") keyEnum = Key.CurlyClose;
+            else if (key == "\\") keyEnum = Key.Pipe;
+
+            else if (key == ";") keyEnum = Key.Colon;
+            else if (key == "'") keyEnum = Key.Quote;
+
+            else if (key == "shift") keyEnum = Key.LShift;
+            else if (key == ",") keyEnum = Key.Comma;
+            else if (key == ".") keyEnum = Key.Dot;
+            else if (key == "/") keyEnum = Key.Slash;
+
+            else if (key == "control" || key == "ctrl") keyEnum = Key.LCtrl;
+            else if (key == "alt") keyEnum = Key.LAlt;
+
+            else if (key == "up arrow") keyEnum = Key.Up;
+            else if (key == "left arrow") keyEnum = Key.Left;
+            else if (key == "down arrow") keyEnum = Key.Down;
+            else if (key == "right arrow") keyEnum = Key.Right;
+
+            else if (key == "break") keyEnum = Key.PauseBreak;
+
+            else if (key == "ins") keyEnum = Key.Insert;
+            else if (key == "pgup") keyEnum = Key.PageUp;
+            else if (key == "del") keyEnum = Key.Delete;
+            else if (key == "pgdn") keyEnum = Key.PageDown;
+
+
+            else if (key == " ") keyEnum = Key.Space;
+
+            else
+                keyEnum = (Key)Enum.Parse(typeof(Key), key, true);
+
+            return keyEnum;
+        }
     }
 
     public class Scope
@@ -131,6 +223,12 @@ namespace BlazingShortcuts
             {
                 ShortcutKeys.Add(new Keys());
             }
+        }
+
+        public void Reset()
+        {
+            ShortcutKeys[0] = new Keys();
+            ShortcutKeys[1] = new Keys();
         }
 
         public Shortcut(Keys k1, Keys k2)
@@ -175,6 +273,15 @@ namespace BlazingShortcuts
         public Keys Keys1 => ShortcutKeys.Count() >= 1 ? ShortcutKeys[0] : null;
         public Keys Keys2 => ShortcutKeys.Count() >= 2 ? ShortcutKeys[1] : null;
 
+        public bool IsCtrlDown { get; set; }
+        public bool IsShiftDown { get; set; }
+        public bool IsAltDown { get; set; }
+
+        public bool currentState { get; set; }
+        public int current => Convert.ToInt32(currentState);
+
+        public bool IsFull => Keys1?.IsFull == true && Keys2?.IsFull == true;
+
     }
 
     public class Keys
@@ -192,6 +299,8 @@ namespace BlazingShortcuts
                 + (Shift ? "Shift + " : "")
                 + (!string.IsNullOrEmpty(Key) ? Key : "");
         }
+
+        public bool IsFull => !string.IsNullOrEmpty(Key);
 
     }
 
@@ -244,7 +353,7 @@ namespace BlazingShortcuts
 
         public void Press()
         {
-            IsPressed = true;
+            IsPressed = !IsPressed;
         }
     }
 

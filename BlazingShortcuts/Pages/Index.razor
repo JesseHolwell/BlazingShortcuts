@@ -5,17 +5,17 @@
 
 <CascadingValue Value="@model" Name="ViewModel">
 
-    <div class="main container-fluid overflow-hidden @(AppState.Theme ? "dark" : "light")">
+    <div class="main container-fluid overflow-hidden vh-100 @(AppState.Theme ? "dark" : "light")">
+        <div>
+            <Navbar />
+        </div>
         <div class="row">
 
             @if (!AppState.Fullscreen)
             {
                 <div class="col-12 col-lg-6">
 
-                    <div class="d-flex flex-column justify-content-between vh-100">
-                        <div>
-                            <Navbar />
-                        </div>
+                    <div class="d-flex flex-column justify-content-between">
                         <div>
                             <KeyEvents />
                         </div>

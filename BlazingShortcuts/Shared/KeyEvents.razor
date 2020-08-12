@@ -5,17 +5,17 @@
 
 <div class="text-center">
     <div>
-        @if (!AppState.Searching || string.IsNullOrEmpty(chord) && string.IsNullOrEmpty(keybind))
+        @if (!AppState.Searching)
         {
             <h2 class="d-none d-md-block">Click here and press some keys</h2>
             <h2 class="d-block d-md-none">Press some keys</h2>
         }
-        <h2>@(shortcut.ToString())</h2>
+        <h2>@(model.Shortcut.ToString())</h2>
     </div>
     <div class="d-none d-md-block">
 
         <div class="input-group mb-3">
-            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@(shortcut.ToString())" >
+            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@(model.Shortcut.ToString())" >
             <div class="input-group-append">
                 <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger" type="button">Clear</button>
             </div>
@@ -27,27 +27,19 @@
 
 @code {
 
-    public bool isCtrlDown = false;
-    public bool isShiftDown = false;
-    public bool isAltDown = false;
+    //public bool isCtrlDown = false;
+    //public bool isShiftDown = false;
+    //public bool isAltDown = false;
 
-    public string keybind;
-    public string chord;
-
-    public bool isChord;
-    public bool directMatch;
-
-    public bool currentState;
-    public int current => Convert.ToInt32(currentState);
-    public Keys keys = new Keys();
-    public Keys keys2 = new Keys();
-    public Shortcut shortcut = new Shortcut();
+    //public Keys keys = new Keys();
+    //public Keys keys2 = new Keys();
+    //public Shortcut shortcut = new Shortcut();
 
     protected override async Task OnInitializedAsync()
     {
-        shortcut.ShortcutKeys.Add(keys);
-        shortcut.ShortcutKeys.Add(keys2);
         //keysCurrent = 0;
+        model.Keyboard.ResetAvailable();
+        model.Keyboard.ResetPressed();
     }
 
     public async Task KeyDown(KeyboardEventArgs args)
@@ -55,68 +47,45 @@
         if (args.Repeat || args.Key == "escape")
             return;
 
-        //if (!shortcut.ShortcutKeys.Contains(keys))
-        //    shortcut.ShortcutKeys.Add(keys);
-
-        //if its a new shortcut
-        //if (!isCtrlDown && !isAltDown && !isShiftDown && !string.IsNullOrEmpty(chord))
-        //{
-        //if (shortcut.ShortcutKeys.Count() >= 2)
-        //{
-        //    shortcut = new Shortcut();
-        //    keys = new Keys();
-        //}
-        //if (isChord)
-        //if (chord.Contains(","))
-        //{
-        //    chord = string.Empty;
-        //    //isChord = false;
-        //}
-        //}
+        if (model.Shortcut.IsFull)
+            model.Shortcut.Reset();
 
         //manage modifier keys
-        if (args.CtrlKey || args.AltKey || args.ShiftKey)
+        //if (args.CtrlKey || args.AltKey || args.ShiftKey)
+        //{
+        if (args.CtrlKey)
         {
-            if (args.CtrlKey)
-            {
-                shortcut.ShortcutKeys[current].Control = true;
-                isCtrlDown = !isCtrlDown;
-                //keybind += "Ctrl + ";
-            }
-            else if (args.AltKey)
-            {
-                shortcut.ShortcutKeys[current].Alt = true;
-                isAltDown = !isAltDown;
-                //keybind += "Alt + ";
-            }
-            else if (args.ShiftKey)
-            {
-                shortcut.ShortcutKeys[current].Shift = true;
-                isShiftDown = !isShiftDown;
-                //keybind += "Shift + ";
-            }
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Control = true;
+            model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
         }
-
-        //keys.Control = isCtrlDown;
-        //keys.Alt = isAltDown;
-        //keys.Shift = isShiftDown;
+        else if (args.AltKey)
+        {
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Alt = true;
+            model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
+        }
+        else if (args.ShiftKey)
+        {
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Shift = true;
+            model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
+        }
+        //}
 
         if (args.Key != "Control" && args.Key != "Shift" && args.Key != "Alt")
         {
-            //keybind += args.Key.ToUpper();
-            shortcut.ShortcutKeys[current].Key = args.Key.ToUpper();
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = args.Key.ToUpper();
 
-            currentState = !currentState;
+            model.Shortcut.currentState = !model.Shortcut.currentState;
 
-            model.Keyboard.ResetPressed();
+            model.Shortcut.IsCtrlDown = false;
+            model.Shortcut.IsAltDown = false;
+            model.Shortcut.IsShiftDown = false;
 
+            //model.Keyboard.ResetPressed();
         }
 
-        await UpdateViewModel(shortcut);
+        await model.UpdateViewModel(model.Shortcut);
 
-        //var keyEnum = (Key)Enum.Parse(typeof(Key), args.Key);
-
-        var keyEnum = GetKeyFromString(args.Key);
+        var keyEnum = model.GetKeyFromString(args.Key);
         if (keyEnum.HasValue)
             model.Keyboard.Keys[keyEnum.Value].IsPressed = true;
 
@@ -132,152 +101,31 @@
             await ClearKeys();
             return;
         }
-
-        //manage modifier keys
-        //if (args.Key == "Control")
-        //    isCtrlDown = false;
-        //if (args.Key == "Alt")
-        //    isAltDown = false;
-        //if (args.Key == "Shift")
-        //    isShiftDown = false;
-        else
-        //skip this step for modifier key presses
-        //if (args.Key != "Control" && args.Key != "Alt" && args.Key != "Shift")
-        {
-            //isCtrlDown = isAltDown = isShiftDown = false;
-            ////chord += (args.CtrlKey ? "Ctrl + " : "") + (args.AltKey ? "Alt + " : "") + (args.ShiftKey ? "Shift + " : "") + args.Key.ToUpper();
-            //chord += (string.IsNullOrEmpty(chord) ? "" : ", ") + keybind;
-            //keybind = string.Empty;
-
-            //keys = new Keys();
-        }
-
-        //keys.Control = isCtrlDown;
-        //keys.Alt = isAltDown;
-        //keys.Shift = isShiftDown;
-
-        //await UpdateViewModel(chord);
-        //this.StateHasChanged();
-
     }
 
     private async Task ClearKeys()
     {
-        keys = new Keys();
-        shortcut = new Shortcut();
+        //keys = new Keys();
+        //shortcut = new Shortcut();
 
-        directMatch = false;
-        isCtrlDown = false;
-        isAltDown = false;
-        isShiftDown = false;
+        //isCtrlDown = false;
+        //isAltDown = false;
+        //isShiftDown = false;
 
-        keybind = string.Empty;
-        chord = string.Empty;
+        //currentState = false;
 
-        currentState = false;
+        model.Shortcut.Reset();
 
         model.Keyboard.ResetAvailable();
         model.Keyboard.ResetPressed();
 
-        await UpdateViewModel(shortcut);
+        //await UpdateViewModel(model.Shortcut);
+        model.UpdateViewModel(model.Shortcut);
+        AppState.IsSearching(!string.IsNullOrEmpty(model.Shortcut.ToString()));
+
+
         this.StateHasChanged();
 
-    }
-
-    private async Task UpdateViewModel(Shortcut shortcut)
-    {
-        AppState.IsSearching(!string.IsNullOrEmpty(shortcut.ToString()));
-
-        model.Keyboard.ResetAvailable();
-
-        foreach (var v in model.Scope.SelectMany(x => x.Bindings))
-        {
-            if (v.DisplayName.ToLower() == "inserttab" || v.DisplayName.ToLower() == "insert tab")
-                Console.WriteLine(shortcut.ToString() + " | " + v.ShortcutKeys.ToString());
-
-            v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().ToLower().StartsWith(shortcut.ToString().ToLower()));
-
-            if (v.IsMatch)
-            {
-                var hey = v.ShortcutKeys.ToString().Substring(shortcut.ToString().Length);
-
-                var you = hey.Split(',');
-
-                var lazy = (you.FirstOrDefault().Length == 0) ? you.LastOrDefault() : you.FirstOrDefault();
-
-                var are = lazy.Trim().Split('+').FirstOrDefault().Trim();
-
-                var keyEnum = GetKeyFromString(are);
-                if (keyEnum.HasValue)
-                    model.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
-            }
-
-            //get available keys
-
-            //if (v.ShortcutKeys.ToString() == chord)
-            //    directMatch = true;
-
-            //Console.WriteLine($"{v.IsMatch}:\t{v.ShortcutKeys.ToString()}\t{shortcut.ToString()}");
-        }
-    }
-
-    public Key? GetKeyFromString(string key)
-    {
-        key = key.ToLower();
-        Key? keyEnum = null;
-
-        if (key == "esc") keyEnum = Key.Escape;
-
-        else if (key == "`") keyEnum = Key.Tilde;
-        else if (key == "1") keyEnum = Key.Num1;
-        else if (key == "2") keyEnum = Key.Num2;
-        else if (key == "3") keyEnum = Key.Num3;
-        else if (key == "4") keyEnum = Key.Num4;
-        else if (key == "5") keyEnum = Key.Num5;
-        else if (key == "6") keyEnum = Key.Num6;
-        else if (key == "7") keyEnum = Key.Num7;
-        else if (key == "8") keyEnum = Key.Num8;
-        else if (key == "9") keyEnum = Key.Num9;
-        else if (key == "0") keyEnum = Key.Num0;
-        else if (key == "-") keyEnum = Key.Underscore;
-        else if (key == "=") keyEnum = Key.Plus;
-
-        else if (key == "bkspce") keyEnum = Key.Backspace;
-
-        else if (key == "[") keyEnum = Key.CurlyOpen;
-        else if (key == "]") keyEnum = Key.CurlyClose;
-        else if (key == "\\") keyEnum = Key.Pipe;
-
-        else if (key == ";") keyEnum = Key.Colon;
-        else if (key == "'") keyEnum = Key.Quote;
-
-        else if (key == "shift") keyEnum = Key.LShift;
-        else if (key == ",") keyEnum = Key.Comma;
-        else if (key == ".") keyEnum = Key.Dot;
-        else if (key == "/") keyEnum = Key.Slash;
-
-        else if (key == "control" || key == "ctrl") keyEnum = Key.LCtrl;
-        else if (key == "alt") keyEnum = Key.LAlt;
-
-        else if (key == "up arrow") keyEnum = Key.Up;
-        else if (key == "left arrow") keyEnum = Key.Left;
-        else if (key == "down arrow") keyEnum = Key.Down;
-        else if (key == "right arrow") keyEnum = Key.Right;
-
-        else if (key == "break") keyEnum = Key.PauseBreak;
-
-        else if (key == "ins") keyEnum = Key.Insert;
-        else if (key == "pgup") keyEnum = Key.PageUp;
-        else if (key == "del") keyEnum = Key.Delete;
-        else if (key == "pgdn") keyEnum = Key.PageDown;
-
-
-        else if (key == " ") keyEnum = Key.Space;
-
-        else
-            keyEnum = (Key)Enum.Parse(typeof(Key), key, true);
-
-        return keyEnum;
     }
 
 }
