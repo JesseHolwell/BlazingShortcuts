@@ -4,16 +4,19 @@
     [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
 }
 
+<div class="sidebar d-flex" style="justify-content:space-between">
 
-<div class="top-row pl-4 navbar navbar-dark header-navbar">
-    <a class="navbar-brand" href="">VS Shortcuts</a>
+    <div class="top-row pl-4 navbar navbar-dark d-inline">
+        @*<a class="navbar-brand" href="">BlazorApp1</a>*@
+        <a class="navbar-brand" href="">VS Shortcuts</a>
 
-    @*<div>
-            <button>Import</button>
-            <button>Export</button>
-        </div>*@
+        <button class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
 
-    <div>
+    <div class="@NavMenuCssClass d-inline" @onclick="ToggleNavMenu">
+        @*<ul class="nav flex-column">*@
         @if (model.Scope.Any())
         {
             <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
@@ -36,8 +39,50 @@
                 <i class="fas fa-moon"></i>
             }
         </button>
+
+        @*<li class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="counter">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="fetchdata">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                </NavLink>
+            </li>*@
+        @*</ul>*@
     </div>
 </div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
+
+
+@*<div class="top-row pl-4 navbar navbar-dark header-navbar">
+        <a class="navbar-brand" href="">VS Shortcuts</a>
+
+        <div>
+                <button>Import</button>
+                <button>Export</button>
+            </div>
+
+        <div>
+
+        </div>
+    </div>*@
 
 
 @code {
