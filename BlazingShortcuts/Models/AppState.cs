@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace BlazingShortcuts
 {
     public class AppState
     {
         public event Action OnChange;
+        private void NotifyStateChanged() => OnChange?.Invoke();
 
         public bool Theme { get; private set; }
         public bool Fullscreen { get; private set; }
@@ -51,22 +46,6 @@ namespace BlazingShortcuts
             Searching = searching ?? !Searching;
             NotifyStateChanged();
             return Searching;
-        }
-
-        private void NotifyStateChanged() => OnChange?.Invoke();
-
-        public string Serialize(List<Scope> model)
-        {
-            string output = JsonSerializer.Serialize(model);
-            Console.WriteLine(output);
-            return output;
-        }
-
-        public List<Scope> Deserialize(string input)
-        {
-            var output = JsonSerializer.Deserialize<List<Scope>>(input);
-            Console.WriteLine(input);
-            return output;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@inject AppState AppState
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
 <div class="text-center">
@@ -10,12 +10,15 @@
             <h2 class="d-none d-md-block">Click here and press some keys</h2>
             <h2 class="d-block d-md-none">Press some keys</h2>
         }
-        <h2>@(model.Shortcut.ToString())</h2>
+        else
+        {
+            <h2>@(model.Shortcut.ToString())</h2>
+        }
     </div>
     <div class="d-none d-md-block">
 
         <div class="input-group mb-3">
-            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@(model.Shortcut.ToString())" >
+            <input type="text" class="form-control col-4 offset-4" @onkeydown="@(e => KeyDown(e))" @onkeyup="@(e => KeyUp(e))" @onkeypress:preventDefault @onkeydown:preventDefault @onkeyup:preventDefault value="@(model.Shortcut.ToString())">
             <div class="input-group-append">
                 <button @onclick="@(() => ClearKeys())" class="btn btn-outline-danger" type="button">Clear</button>
             </div>
@@ -89,6 +92,8 @@
         if (keyEnum.HasValue)
             model.Keyboard.Keys[keyEnum.Value].IsPressed = true;
 
+        AppState.IsSearching(true);
+
         this.StateHasChanged();
     }
 
@@ -115,13 +120,13 @@
         //currentState = false;
 
         model.Shortcut.Reset();
-
         model.Keyboard.ResetAvailable();
         model.Keyboard.ResetPressed();
 
         //await UpdateViewModel(model.Shortcut);
         model.UpdateViewModel(model.Shortcut);
-        AppState.IsSearching(!string.IsNullOrEmpty(model.Shortcut.ToString()));
+        AppState.IsSearching(false);
+        //AppState.IsSearching(!string.IsNullOrEmpty(model.Shortcut.ToString()));
 
 
         this.StateHasChanged();

@@ -1,13 +1,12 @@
 ﻿@inject AppState AppState
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
-<div class="sidebar d-flex" style="justify-content:space-between">
+<div class="sidebar d-md-flex" style="justify-content:space-between">
 
-    <div class="top-row pl-4 navbar navbar-dark d-inline">
-        @*<a class="navbar-brand" href="">BlazorApp1</a>*@
+    <div class="top-row pl-4 navbar navbar-dark">
         <a class="navbar-brand" href="">VS Shortcuts</a>
 
         <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -15,51 +14,36 @@
         </button>
     </div>
 
-    <div class="@NavMenuCssClass d-inline" @onclick="ToggleNavMenu">
-        @*<ul class="nav flex-column">*@
-        @if (model.Scope.Any())
-        {
-            <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
-            <button @onclick="@(() => Save())" class="btn btn-outline-primary">Save</button>
-            <button @onclick="@(() => Reset())" class="btn btn-outline-primary">Reset</button>
-            @*<button @onclick="@(() => SortByName())" class="btn btn-outline-primary">Sort by name</button>
-                <button @onclick="@(() => SortByBinding())" class="btn btn-outline-primary">Sort by keybind</button>*@
-            <button @onclick="@(() => ShowAll())" class="btn btn-outline-primary">Show all</button>
-            <button @onclick="@(() => HideAll())" class="btn btn-outline-primary">Hide all</button>
-            <button @onclick="@(() => Fullscreen())" class="btn btn-outline-primary">Fullscreen</button>
-            <button @onclick="@(() => ToggleInfo(true))" class="btn btn-outline-primary">Info</button>
-        }
-        <button @onclick="ToggleTheme" class="btn btn-outline-info">
-            @if (AppState.Theme)
-            {
-                <i class="fas fa-sun"></i>
-            }
-            else
-            {
-                <i class="fas fa-moon"></i>
-            }
-        </button>
-
-        @*<li class="nav-item px-3">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="counter">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Counter
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="fetchdata">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-                </NavLink>
-            </li>*@
-        @*</ul>*@
+    <div class="d-inline">
+        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+            <div class="navbar-buttons">
+                @if (model.Bindings.IsInitialized)
+                {
+                    <button @onclick="@(() => Configure())" class="btn btn-outline-primary">Configure</button>
+                    <button @onclick="@(() => Save())" class="btn btn-outline-primary">Save</button>
+                    <button @onclick="@(() => Reset())" class="btn btn-outline-primary">Reset</button>
+                    <button @onclick="@(() => ShowAll())" class="btn btn-outline-primary">Show all</button>
+                    <button @onclick="@(() => HideAll())" class="btn btn-outline-primary">Hide all</button>
+                    <button @onclick="@(() => Fullscreen())" class="btn btn-outline-primary d-md-none">Fullscreen</button>
+                    <button @onclick="@(() => ToggleInfo(true))" class="btn btn-outline-primary d-lg-none">Info</button>
+                }
+                <button @onclick="ToggleTheme" class="btn btn-outline-info">
+                    @if (AppState.Theme)
+                    {
+                        <i class="fas fa-sun"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-moon"></i>
+                    }
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 @code {
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -68,24 +52,6 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-}
-
-
-@*<div class="top-row pl-4 navbar navbar-dark header-navbar">
-        <a class="navbar-brand" href="">VS Shortcuts</a>
-
-        <div>
-                <button>Import</button>
-                <button>Export</button>
-            </div>
-
-        <div>
-
-        </div>
-    </div>*@
-
-
-@code {
 
     public string themeKey = "theme";
     public string bindingsKey = "bindings";
@@ -105,19 +71,12 @@
         {
             Console.WriteLine("Eating cereal");
 
-            //model.Output += "Generating list from session storage\n";
-            //this.StateHasChanged();
+            model.Bindings = Storage.Deserialize(cereal);
 
-            //await model.GenerateList(bytes);
-            model.Scope = AppState.Deserialize(cereal);
             Console.WriteLine("Ate cereal");
-            //this.StateHasChanged();
-
-            Console.WriteLine("Cereal eaten successfully");
         }
         else
         {
-            //model.Output += "no found file\n";
             this.StateHasChanged();
         }
     }
@@ -129,7 +88,7 @@
 
     public async Task Save()
     {
-        await localStorage.SetItemAsync(bindingsKey, AppState.Serialize(model.Scope));
+        await localStorage.SetItemAsync(bindingsKey, Storage.Serialize(model.Bindings));
     }
 
     public async Task Reset()
@@ -137,45 +96,45 @@
         await Initialize();
     }
 
-    public bool SortByNameAscending = true;
-    public bool SortByBindingAscending = true;
+    //public bool SortByNameAscending = true;
+    //public bool SortByBindingAscending = true;
 
-    public async Task SortByName()
-    {
-        foreach (var Scope in model.Scope)
-        {
-            if (SortByNameAscending)
-                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.DisplayName).ToList();
-            else
-                Scope.Bindings = Scope.Bindings.OrderBy(x => x.DisplayName).ToList();
-        }
+    //public async Task SortByName()
+    //{
+    //    foreach (var Scope in model.Bindings.Scope)
+    //    {
+    //        if (SortByNameAscending)
+    //            Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.DisplayName).ToList();
+    //        else
+    //            Scope.Bindings = Scope.Bindings.OrderBy(x => x.DisplayName).ToList();
+    //    }
 
-        SortByNameAscending = !SortByNameAscending;
-        SortByBindingAscending = false;
+    //    SortByNameAscending = !SortByNameAscending;
+    //    SortByBindingAscending = false;
 
-        this.StateHasChanged();
-    }
+    //    this.StateHasChanged();
+    //}
 
-    public async Task SortByBinding()
-    {
-        foreach (var Scope in model.Scope)
-        {
+    //public async Task SortByBinding()
+    //{
+    //    foreach (var Scope in model.Bindings.Scope)
+    //    {
 
-            if (SortByBindingAscending)
-                Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.ShortcutKeys.ToString()).ToList();
-            else
-                Scope.Bindings = Scope.Bindings.OrderBy(x => x.ShortcutKeys.ToString()).ToList();
-        }
+    //        if (SortByBindingAscending)
+    //            Scope.Bindings = Scope.Bindings.OrderByDescending(x => x.ShortcutKeys.ToString()).ToList();
+    //        else
+    //            Scope.Bindings = Scope.Bindings.OrderBy(x => x.ShortcutKeys.ToString()).ToList();
+    //    }
 
-        SortByBindingAscending = !SortByBindingAscending;
-        SortByNameAscending = false;
+    //    SortByBindingAscending = !SortByBindingAscending;
+    //    SortByNameAscending = false;
 
-        this.StateHasChanged();
-    }
+    //    this.StateHasChanged();
+    //}
 
     public async Task HideAll()
     {
-        foreach (var Scope in model.Scope)
+        foreach (var Scope in model.Bindings.Scope)
         {
             Scope.Visible = false;
 
@@ -187,7 +146,7 @@
 
     public async Task ShowAll()
     {
-        foreach (var Scope in model.Scope)
+        foreach (var Scope in model.Bindings.Scope)
         {
             Scope.Visible = true;
 
@@ -204,8 +163,7 @@
 
     public async Task ToggleInfo(bool? toggle = null)
     {
-        if (model.Scope.Any())
-            AppState.ToggleInfo(toggle);
+        AppState.ToggleInfo(toggle);
     }
 
     async Task ToggleTheme()

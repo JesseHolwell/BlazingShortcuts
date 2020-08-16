@@ -69,7 +69,7 @@ app {
 }
 
     .sidebar .top-row {
-/*        background-color: rgba(0,0,0,0.4);*/
+        /*        background-color: rgba(0,0,0,0.4);*/
     }
 
     .sidebar .navbar-brand {
@@ -122,6 +122,13 @@ app {
 
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-buttons {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -215,6 +222,115 @@ app {
     height: 55px;
 }
 
+#key-events {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+}
+
+
+
+
+.keyboard {
+    width: 100%;
+    /*        height: 320px;*/
+    background-color: #111;
+    margin: 0px auto;
+    border-radius: 9px;
+    padding: 30px;
+    color: #eee;
+    display: inline-flex;
+}
+
+    .keyboard .section-a {
+        width: 80%;
+        margin-right: 5%;
+    }
+
+    .keyboard .section-b {
+        width: 20%;
+    }
+
+    .keyboard .key {
+        width: 7%;
+        /*        height: 48px;*/
+        height: 2.5vw;
+        background-color: #333;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: box-shadow 0.7s ease;
+        float: left;
+        background-clip: content-box;
+        padding: 2px;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    .keyboard .section-b .key {
+        width: 33%;
+    }
+
+
+
+    .keyboard .backspace.key, .tab.key {
+        width: 9%;
+    }
+
+    .keyboard .caps.key {
+        width: 10%;
+    }
+
+    .keyboard .enter.key {
+        width: 13%;
+    }
+
+    .keyboard .shift.key {
+        width: 15%;
+    }
+
+    .keyboard .space.key {
+        width: 51%;
+    }
+
+    .keyboard .space1 {
+        margin-right: 5%;
+    }
+
+    .keyboard .space2 {
+        margin-right: 2%;
+    }
+
+    .keyboard .function {
+        margin-bottom: 5px;
+    }
+
+    .keyboard .utility-1 .utility {
+        margin-bottom: 5px;
+    }
+
+    .keyboard .social-distance .key {
+        margin-bottom: 48px;
+    }
+
+    .keyboard .hidden.key {
+        visibility: hidden;
+    }
+
+    /*pressed*/
+    .keyboard .pressed {
+        background-color: purple;
+    }
+
+    /*available*/
+    .keyboard .available {
+        /*        box-shadow: green, 5px, 5px;*/
+        background-color: darkorange;
+    }
+
+
+
+
+
+
 
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
@@ -228,6 +344,35 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
+
+    .navbar-buttons .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .stone-wall-2,
+    .stone-wall-4 {
+        column-count: 1;
+    }
+
+    .keyboard {
+        padding: 5px;
+        border-radius:0;
+    }
+
+        .keyboard .section-a {
+            margin-right: 3%;
+        }
+
+        .keyboard .key {
+            /*height: 30px;*/
+            height: 5vw;
+            font-size: 0.5rem;
+        }
+
+        .keyboard .social-distance .key {
+            margin-bottom: 30px;
+        }
 }
 
 @media (min-width: 768px) {

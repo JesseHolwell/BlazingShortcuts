@@ -1,16 +1,16 @@
 ﻿@inject AppState AppState
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
 <div class="@(AppState.Fullscreen ? "stone-wall-4" : "stone-wall-2")">
 
-    @if (AppState.Searching && !model.Scope.Any(x => x.HasMatch))
+    @if (AppState.Searching && !model.Bindings.Scope.Any(x => x.HasMatch))
     {
         <h3>No match found</h3>
     }
 
-    @foreach (var scope in model.Scope)
+    @foreach (var scope in model.Bindings.Scope)
     {
         if ((AppState.Searching && scope.HasMatch && scope.Visible)
             || (!AppState.Searching && scope.Visible)
@@ -71,7 +71,7 @@
     public async Task ToggleScope(Scope scope)
     {
         scope.Visible = !scope.Visible;
-        model.Scope = model.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
+        model.Bindings.Scope = model.Bindings.Scope.OrderByDescending(x => x.Visible).ThenBy(x => x.Name).ToList();
         this.StateHasChanged();
     }
 

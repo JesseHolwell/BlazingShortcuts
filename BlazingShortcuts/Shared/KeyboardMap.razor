@@ -1,6 +1,6 @@
 ﻿@inject AppState AppState
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
 <div class="content-main">
@@ -9,105 +9,105 @@
         <div class="section-a">
             <div class="function-keys">
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Escape]" Classes="function space1" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F1]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F2]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F3]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F4]" Classes="function space2" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F5]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F6]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F7]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F8]" Classes="function space2" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F9]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F10]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F11]" Classes="function" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F12]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Escape]" Classes="function space1" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F1]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F2]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F3]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F4]" Classes="function space2" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F5]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F6]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F7]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F8]" Classes="function space2" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F9]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F10]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F11]" Classes="function" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F12]" Classes="function" />
 
             </div>
 
             <div>
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Tilde]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num1]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num2]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num3]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num4]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num5]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num6]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num7]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num8]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num9]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Num0]" Classes="num" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Underscore]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Plus]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Backspace]" Classes="backspace" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Backtick]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num1]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num2]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num3]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num4]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num5]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num6]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num7]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num8]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num9]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Num0]" Classes="num" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Minus]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Equals]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Backspace]" Classes="backspace" />
 
             </div>
 
             <div>
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Tab]" Classes="tab" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Q]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.W]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.E]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.R]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.T]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Y]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.U]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.I]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.O]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.P]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.CurlyOpen]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.CurlyClose]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Pipe]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Tab]" Classes="tab" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Q]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.W]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.E]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.R]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.T]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Y]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.U]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.I]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.O]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.P]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.SquareOpen]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.SquareClose]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Backslash]" Classes="" />
 
             </div>
 
             <div>
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Caps]" Classes="caps" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.A]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.S]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.D]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.F]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.G]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.H]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.J]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.K]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.L]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Colon]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Quote]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Enter]" Classes="enter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Caps]" Classes="caps" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.A]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.S]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.D]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.F]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.G]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.H]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.J]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.K]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.L]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Semicolon]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Apostrophe]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Enter]" Classes="enter" />
 
             </div>
 
             <div>
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.LShift]" Classes="shift" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Z]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.X]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.C]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.V]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.B]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.N]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.M]" Classes="letter" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Comma]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Dot]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Slash]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.RShift]" Classes="shift" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Shift]" Classes="shift" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Z]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.X]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.C]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.V]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.B]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.N]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.M]" Classes="letter" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Comma]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Fullstop]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Slash]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Shift]" Classes="shift" />
 
             </div>
 
             <div>
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.LCtrl]" Classes="ctrl" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.LWin]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.LAlt]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Space]" Classes="space" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.RAlt]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.RWin]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Func]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.RCtrl]" Classes="ctrl" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Ctrl]" Classes="ctrl" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Win]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Alt]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Space]" Classes="space" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Alt]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Win]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Func]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Ctrl]" Classes="ctrl" />
 
             </div>
         </div>
@@ -115,41 +115,41 @@
         <div class="section-b">
             <div class="utility-1">
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.PrintScreen]" Classes="utility" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.ScrollLock]" Classes="utility" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.PauseBreak]" Classes="utility" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.PrintScreen]" Classes="utility" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.ScrollLock]" Classes="utility" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.PauseBreak]" Classes="utility" />
 
             </div>
 
             <div class="utility-2">
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Insert]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Home]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.PageUp]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Insert]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Home]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.PageUp]" Classes="" />
 
             </div>
 
             <div class="social-distance">
 
-                <KeyboardKey Key="model.Keyboard.Keys[Key.Delete]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.End]" Classes="" />
-                <KeyboardKey Key="model.Keyboard.Keys[Key.PageDown]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Delete]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.End]" Classes="" />
+                <KeyboardKey KeyVM="model.Keyboard.Keys[Key.PageDown]" Classes="" />
 
             </div>
 
             <div class="arrows">
                 <div>
 
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Hidden]" Classes="hidden" />
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Up]" Classes="" />
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Hidden]" Classes="hidden" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Hidden]" Classes="hidden" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Up]" Classes="" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Hidden]" Classes="hidden" />
 
                 </div>
                 <div>
 
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Left]" Classes="" />
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Down]" Classes="" />
-                    <KeyboardKey Key="model.Keyboard.Keys[Key.Right]" Classes="" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Left]" Classes="" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Down]" Classes="" />
+                    <KeyboardKey KeyVM="model.Keyboard.Keys[Key.Right]" Classes="" />
 
                 </div>
 
@@ -161,101 +161,3 @@
 
 <br />
 <br />
-
-@code {
-
-}
-
-<style>
-
-    .keyboard {
-        width: 100%;
-        /*        height: 320px;*/
-        background-color: #111;
-        margin: 0px auto;
-        border-radius: 9px;
-        padding: 30px;
-        color: #eee;
-        display: inline-flex;
-    }
-
-    .section-a {
-        width: 80%;
-        margin-right: 5%;
-    }
-
-    .section-b {
-        width: 20%;
-    }
-
-    .key {
-        width: 7%;
-        height: 48px;
-        background-color: #333;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: box-shadow 0.7s ease;
-        float: left;
-        background-clip: content-box;
-        padding: 2px;
-        font-size: 0.8rem;
-    }
-
-    .section-b .key {
-        width: 33%;
-    }
-
-
-
-    .backspace.key, .tab.key {
-        width: 9%;
-    }
-
-    .caps.key {
-        width: 10%;
-    }
-
-    .enter.key {
-        width: 13%;
-    }
-
-    .shift.key {
-        width: 15%;
-    }
-
-    .space.key {
-        width: 51%;
-    }
-
-    .space1 {
-        margin-right: 5%;
-    }
-
-    .space2 {
-        margin-right: 2%;
-    }
-
-    .function {
-        margin-bottom: 5px;
-    }
-
-    .social-distance .key {
-        margin-bottom: 48px;
-    }
-
-    .hidden.key {
-        visibility: hidden;
-    }
-
-    /*pressed*/
-    .pressed {
-        background-color: purple;
-    }
-
-    /*available*/
-    .available {
-        /*        box-shadow: green, 5px, 5px;*/
-        background-color: darkorange;
-    }
-
-</style>

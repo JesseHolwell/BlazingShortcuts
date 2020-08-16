@@ -1,7 +1,7 @@
 ﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppState AppState
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
 <style>
@@ -44,7 +44,7 @@
     }
 </style>
 
-@if (AppState.ShowInfo)
+@if (AppState.ShowInfo || !model.Bindings.IsInitialized)
 {
     <StartPanel />
 }

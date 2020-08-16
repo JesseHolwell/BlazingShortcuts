@@ -15,9 +15,9 @@
             {
                 <div class="col-12 col-lg-6">
 
-                    <div class="d-flex flex-column justify-content-between h-100">
+                    <div id="left-panel" class="d-flex flex-column justify-content-between h-100">
                         <div></div>
-                        <div>
+                        <div id="key-events">
                             <KeyEvents />
                         </div>
                         <div>
@@ -41,7 +41,7 @@
 
 @code {
 
-    public BindingsViewModel model = new BindingsViewModel();
+    public VSShortcutsViewModel model = new VSShortcutsViewModel();
 
     protected override void OnInitialized()
     {

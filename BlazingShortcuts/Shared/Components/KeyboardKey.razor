@@ -1,40 +1,40 @@
 ﻿@namespace Components
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
-<div class="key @Classes @(Key.IsPressed ? "pressed" : "") @(Key.IsAvailable ? "available" : "")" @onclick="@(() => KeyPress(Key))">
-    @Key.Key
+<div class="key @Classes @(KeyVM.IsPressed ? "pressed" : "") @(KeyVM.IsAvailable ? "available" : "")" @onclick="@(() => KeyPress(KeyVM))">
+    @((MarkupString)KeyVM.KeyFriendly)
 </div>
 
 @code {
 
     [Parameter]
-    public KeyboardKeyModel Key { get; set; }
+    public BlazingShortcuts.Models.KeyboardKeyModel KeyVM { get; set; }
 
     [Parameter]
     public string Classes { get; set; }
 
-    public async Task KeyPress(KeyboardKeyModel key)
+    public async Task KeyPress(BlazingShortcuts.Models.KeyboardKeyModel key)
     {
         key.Press();
 
-        if (key.Key == "Escape")
+        if (key.Key == Key.Escape)
         {
             model.Shortcut.Reset();
             model.Keyboard.ResetAvailable();
             model.Keyboard.ResetPressed();
         }
 
-        if (key.Key == "LCtrl")
+        if (key.Key == Key.Ctrl)
             model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
-        else if (key.Key == "LAlt")
+        else if (key.Key == Key.Alt)
             model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
-        else if (key.Key == "LShift")
+        else if (key.Key == Key.Shift)
             model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
         else
         {
-            model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = key.Key.ToUpper();
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = key.Key.ToString().ToUpper();
 
             model.Shortcut.currentState = !model.Shortcut.currentState;
 

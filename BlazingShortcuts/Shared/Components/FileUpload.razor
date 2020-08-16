@@ -6,7 +6,7 @@
 @using System.IO;
 
 @functions{
-    [CascadingParameter(Name = "ViewModel")] protected BindingsViewModel model { get; set; }
+    [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
 
 <h1>File Upload</h1>
@@ -136,7 +136,7 @@
 
                 await model.GenerateList(bytes);
 
-                await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
+                await localStorage.SetItemAsync(key, Storage.Serialize(model.Bindings));
             }
 
             AppState.ToggleInfo(false);
@@ -151,7 +151,7 @@
         var bytes = await Http.GetByteArrayAsync($"Sample/{file}.xml");
         await model.GenerateList(bytes);
 
-        await localStorage.SetItemAsync(key, AppState.Serialize(model.Scope));
+        await localStorage.SetItemAsync(key, Storage.Serialize(model.Bindings));
 
         AppState.ToggleInfo(false);
 
