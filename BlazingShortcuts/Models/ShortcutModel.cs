@@ -43,11 +43,16 @@ namespace BlazingShortcuts.Models
 
         public ShortcutModel(string shortcut)
         {
+            //Console.WriteLine($"input:\t{shortcut}");
             foreach (var v in shortcut.Split(','))
             {
+                //Console.WriteLine($"\npart:\t{v}");
+
                 var keys = new Keys();
                 foreach (var z in v.Split('+'))
                 {
+                    //Console.WriteLine($"\n\nkey:\t{z}");
+
                     if (z == "Ctrl")
                         keys.Control = true;
                     else if (z == "Alt")
@@ -58,15 +63,19 @@ namespace BlazingShortcuts.Models
                         keys.Key = z;
                 }
 
+                //Console.WriteLine($"\nkeys:\t{keys.ToString()}");
                 ShortcutKeys.Add(keys);
             }
+
+            //Console.WriteLine($"\ndone:\t{this.ToString()}");
+
         }
 
         public override string ToString()
         {
             var output = string.Empty;
-            var key1 = ShortcutKeys.FirstOrDefault()?.ToString() ?? "";
-            var key2 = ShortcutKeys.LastOrDefault()?.ToString() ?? "";
+            var key1 = ShortcutKeys.Count() >= 1 ? ShortcutKeys[0].ToString() : "";
+            var key2 = ShortcutKeys.Count() >= 2 ? ShortcutKeys[1].ToString() : "";
             output += !string.IsNullOrWhiteSpace(key1) ? key1 : "";
             output += !string.IsNullOrWhiteSpace(key2) ? (", " + key2) : "";
             return output;

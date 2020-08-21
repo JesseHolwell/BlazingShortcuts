@@ -47,7 +47,9 @@
 
     public async Task KeyDown(KeyboardEventArgs args)
     {
-        if (args.Repeat || args.Key == "escape")
+        Console.WriteLine($"KeyDown - {args.Key}");
+
+        if (args.Repeat || args.Key.ToLower() == "escape")
             return;
 
         if (model.Shortcut.IsFull)
@@ -101,7 +103,7 @@
     {
         Console.WriteLine("Key:\t" + args.Key);
 
-        if (args.Key == "escape")
+        if (args.Key.ToLower() == "escape")
         {
             await ClearKeys();
             return;
@@ -117,15 +119,15 @@
         //isAltDown = false;
         //isShiftDown = false;
 
-        //currentState = false;
+        model.Shortcut.currentState = false;
 
         model.Shortcut.Reset();
         model.Keyboard.ResetAvailable();
         model.Keyboard.ResetPressed();
 
         //await UpdateViewModel(model.Shortcut);
-        model.UpdateViewModel(model.Shortcut);
         AppState.IsSearching(false);
+        await model.UpdateViewModel(model.Shortcut);
         //AppState.IsSearching(!string.IsNullOrEmpty(model.Shortcut.ToString()));
 
 

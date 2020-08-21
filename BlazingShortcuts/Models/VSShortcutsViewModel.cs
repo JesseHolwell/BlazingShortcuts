@@ -99,6 +99,8 @@ namespace BlazingShortcuts.Models
 
         public async Task UpdateViewModel(ShortcutModel shortcut)
         {
+            Console.WriteLine($"UpdateViewModel - {shortcut.ToString()}");
+
             //AppState.IsSearching(!string.IsNullOrEmpty(shortcut.ToString()));
 
             this.Keyboard.ResetAvailable();
@@ -120,15 +122,20 @@ namespace BlazingShortcuts.Models
 
                     var are = lazy.Trim().Split('+').FirstOrDefault().Trim();
 
-                    var keyEnum = GetKeyFromString(are);
-                    if (keyEnum.HasValue)
-                        this.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
+                    if (!string.IsNullOrWhiteSpace(are))
+                    {
+                        var keyEnum = GetKeyFromString(are);
+                        if (keyEnum.HasValue)
+                            this.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
+                    }
                 }
             }
         }
 
         public Key? GetKeyFromString(string key)
         {
+            Console.WriteLine($"GetKeyFromString - {key}");
+
             key = key.ToLower();
             Key? keyEnum = null;
 
