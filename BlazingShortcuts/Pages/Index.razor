@@ -8,29 +8,39 @@
     <div class="main container-fluid overflow-hidden vh-100 @(AppState.Theme ? "dark" : "light")">
         <div>
             <Navbar />
+            @*<button @onclick="@(() => Toggle("events"))" class="btn btn-outline-primary">events</button>
+                <button @onclick="@(() => Toggle("info"))" class="btn btn-outline-primary">info</button>*@
+
         </div>
         <div class="row">
 
-            @if (!AppState.Fullscreen)
-            {
-                <div class="col-12 col-lg-6">
-
-                    <div id="left-panel" class="d-flex flex-column justify-content-between h-100">
-                        <div></div>
-                        <div id="key-events">
-                            <KeyEvents />
-                        </div>
-                        <div>
-                            <KeyboardMap />
-                        </div>
+            <div class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.EventsAndShortcuts ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
+                <div id="left-panel" class="d-flex flex-column justify-content-between h-100">
+                    <div></div>
+                    <div id="key-events">
+                        <KeyEvents />
                     </div>
-
+                    <div>
+                        <KeyboardMap />
+                    </div>
                 </div>
-            }
+            </div>
 
-            <div class="col-12 @(AppState.Fullscreen ? "col-lg-12" : "col-lg-6") flex-transition">
+            <div class="col-12 @(AppState.DisplayState == DisplayState.ShortcutsFull ? "col-lg-12" : (AppState.DisplayState == DisplayState.EventsAndShortcuts || AppState.DisplayState == DisplayState.ShortcutsAndInfo) ? "col-lg-6" : "col-lg-0") flex-transition">
+                <div class="viewport-toggle float-left">
+                    <button @onclick="@(() => Toggle("events"))" class="btn btn-outline-primary">|</button>
+                </div>
+                <div class="viewport-toggle float-right">
+                    <button @onclick="@(() => Toggle("info"))" class="btn btn-outline-primary">|</button>
+                </div>
                 <div class="vh-100 overflow-scroll">
                     <MainPanel />
+                </div>
+            </div>
+
+            <div class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.ShortcutsAndInfo ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
+                <div id="right-panel">
+                    <StartPanel />
                 </div>
             </div>
 
@@ -38,6 +48,31 @@
     </div>
 
 </CascadingValue>
+
+<style>
+
+    .flex-transition {
+        transition: flex linear 1s;
+        max-width:none;
+        /*transition: max-width linear 1s;*/
+    }
+
+    .col-lg-0 {
+        flex: 0;
+        padding: 0;
+    }
+
+    #left-panel, #right-panel {
+        max-width: 50vw;
+        min-width: 50vw;
+    }
+
+    .viewport-toggle {
+        position: relative;
+        top: 45%;
+        height: 0;
+    }
+</style>
 
 @code {
 
@@ -51,6 +86,25 @@
     public void Dispose()
     {
         AppState.OnChange -= StateHasChanged;
+    }
+
+    private async Task Toggle(string panel)
+    {
+        if (panel == "events")
+        {
+            if (AppState.DisplayState == DisplayState.EventsAndShortcuts)
+                AppState.SetDisplayState(DisplayState.ShortcutsFull);
+            else
+                AppState.SetDisplayState(DisplayState.EventsAndShortcuts);
+        }
+        else if (panel == "info")
+        {
+            if (AppState.DisplayState == DisplayState.ShortcutsAndInfo)
+                AppState.SetDisplayState(DisplayState.ShortcutsFull);
+            else
+                AppState.SetDisplayState(DisplayState.ShortcutsAndInfo);
+        }
+
     }
 
 }

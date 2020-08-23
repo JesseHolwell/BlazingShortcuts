@@ -44,11 +44,4 @@
     }
 </style>
 
-@if (AppState.ShowInfo || !model.Bindings.IsInitialized)
-{
-    <StartPanel />
-}
-else
-{
-    <ShortcutList />
-}
+<ShortcutList />
