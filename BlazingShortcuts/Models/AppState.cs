@@ -13,6 +13,21 @@ namespace BlazingShortcuts
         public bool ShowInfo { get; private set; }
         public bool Searching { get; private set; }
 
+
+
+        //public bool DisplayKeyEvents { get; private set; }
+        //public bool DisplayShortcuts { get; private set; }
+        //public bool DisplayInfo { get; private set; }
+
+        public DisplayState DisplayState { get; set; }
+
+        public void SetDisplayState(DisplayState state)
+        {
+            Console.WriteLine(state);
+            DisplayState = state;
+            NotifyStateChanged();
+        }
+
         public bool ToggleTheme(bool? theme = null)
         {
             Theme = theme ?? !Theme;
@@ -47,5 +62,13 @@ namespace BlazingShortcuts
             NotifyStateChanged();
             return Searching;
         }
+    }
+
+    public enum DisplayState
+    {
+        EventsAndInfo = 0,
+        EventsAndShortcuts = 1,
+        ShortcutsAndInfo = 2,
+        ShortcutsFull = 3
     }
 }
