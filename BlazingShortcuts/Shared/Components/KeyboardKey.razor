@@ -1,4 +1,5 @@
 ﻿@namespace Components
+@inject AppState AppState
 @functions{
     [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
@@ -27,11 +28,22 @@
         }
 
         if (key.Key == Key.Ctrl)
+        {
             model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Control = true;
+        }
         else if (key.Key == Key.Alt)
+        {
             model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Alt = true;
+
+        }
         else if (key.Key == Key.Shift)
+        {
             model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Shift = true;
+
+        }
         else
         {
             model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = key.Key.ToString().ToUpper();
@@ -46,5 +58,6 @@
 
         await model.UpdateViewModel(model.Shortcut);
         this.StateHasChanged();
+        AppState.IsSearching(true);
     }
 }

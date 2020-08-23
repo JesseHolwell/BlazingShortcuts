@@ -107,6 +107,10 @@ namespace BlazingShortcuts.Models
 
             foreach (var v in this.Bindings.Scope.SelectMany(x => x.Bindings))
             {
+                //split up the shortcut string into parts
+
+
+
                 if (v.DisplayName.ToLower() == "inserttab" || v.DisplayName.ToLower() == "insert tab")
                     Console.WriteLine(shortcut.ToString() + " | " + v.ShortcutKeys.ToString());
 
