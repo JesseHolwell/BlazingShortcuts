@@ -409,7 +409,7 @@ app {
     /*available*/
     .keyboard .available {
         /*        box-shadow: green, 5px, 5px;*/
-        background-color: darkorange;
+        color: darkorange;
     }
 
 
