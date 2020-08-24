@@ -110,7 +110,17 @@ namespace BlazingShortcuts.Models
                 if (v.DisplayName.ToLower() == "inserttab" || v.DisplayName.ToLower() == "insert tab")
                     Console.WriteLine(shortcut.ToString() + " | " + v.ShortcutKeys.ToString());
 
-                v.IsMatch = (string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().ToLower().StartsWith(shortcut.ToString().ToLower()));
+                var ctrlMatch = v.ShortcutKeys.Keys1.Control == shortcut.Keys1.Control;
+                var altMatch = v.ShortcutKeys.Keys1.Alt == shortcut.Keys1.Alt;
+                var shiftMatch = v.ShortcutKeys.Keys1.Shift == shortcut.Keys1.Shift;
+                var keyMatch = v.ShortcutKeys.Keys1.Key == shortcut.Keys1.Key || string.IsNullOrEmpty(shortcut.Keys1.Key);
+
+                v.IsMatch = ctrlMatch && altMatch && shiftMatch && keyMatch;
+                    //(string.IsNullOrEmpty(shortcut.ToString()) || v.ShortcutKeys.ToString().ToLower().StartsWith(shortcut.ToString().ToLower()));
+
+                //if control is pressed
+                //matches = anything with ctrl in it
+                //available = shift, alt, anything thats a direct ctrl combo
 
                 if (v.IsMatch)
                 {
@@ -118,13 +128,13 @@ namespace BlazingShortcuts.Models
 
                     var you = hey.Split(',');
 
-                    var lazy = (you.FirstOrDefault().Length == 0) ? you.LastOrDefault() : you.FirstOrDefault();
+                    var are = (you.FirstOrDefault().Length == 0) ? you.LastOrDefault() : you.FirstOrDefault();
 
-                    var are = lazy.Trim().Split('+').FirstOrDefault().Trim();
+                    var lazy = are.Trim().Split('+').FirstOrDefault().Trim();
 
-                    if (!string.IsNullOrWhiteSpace(are))
+                    if (!string.IsNullOrWhiteSpace(lazy))
                     {
-                        var keyEnum = GetKeyFromString(are);
+                        var keyEnum = GetKeyFromString(lazy);
                         if (keyEnum.HasValue)
                             this.Keyboard.Keys[keyEnum.Value].IsAvailable = true;
                     }

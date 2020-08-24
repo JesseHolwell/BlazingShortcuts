@@ -8,13 +8,10 @@
     <div class="main container-fluid overflow-hidden vh-100 @(AppState.Theme ? "dark" : "light")">
         <div>
             <Navbar />
-            @*<button @onclick="@(() => Toggle("events"))" class="btn btn-outline-primary">events</button>
-                <button @onclick="@(() => Toggle("info"))" class="btn btn-outline-primary">info</button>*@
-
         </div>
         <div class="row">
 
-            <div class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.EventsAndShortcuts ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
+            <div id="left-parent" class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.EventsAndShortcuts ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
                 <div id="left-panel" class="d-flex flex-column justify-content-between h-100">
                     <div></div>
                     <div id="key-events">
@@ -33,14 +30,16 @@
                 <div class="viewport-toggle float-right">
                     <button @onclick="@(() => Toggle("info"))" class="btn btn-outline-primary">|</button>
                 </div>
-                <div class="vh-100 overflow-scroll">
-                    <MainPanel />
+                <div class="vh-100 overflow-scroll mx-2rem">
+                    <ShortcutList />
                 </div>
             </div>
 
-            <div class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.ShortcutsAndInfo ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
+            <div id="right-parent" class="col-12 @(AppState.DisplayState == DisplayState.EventsAndInfo || AppState.DisplayState == DisplayState.ShortcutsAndInfo ? "col-lg-6" : "col-lg-0") flex-transition overflow-hidden">
                 <div id="right-panel">
-                    <StartPanel />
+                    <div class="direction-ltr">
+                        <StartPanel />
+                    </div>
                 </div>
             </div>
 
@@ -48,31 +47,6 @@
     </div>
 
 </CascadingValue>
-
-<style>
-
-    .flex-transition {
-        transition: flex linear 1s;
-        max-width:none;
-        /*transition: max-width linear 1s;*/
-    }
-
-    .col-lg-0 {
-        flex: 0;
-        padding: 0;
-    }
-
-    #left-panel, #right-panel {
-        max-width: 50vw;
-        min-width: 50vw;
-    }
-
-    .viewport-toggle {
-        position: relative;
-        top: 45%;
-        height: 0;
-    }
-</style>
 
 @code {
 
@@ -108,9 +82,3 @@
     }
 
 }
-
-<style>
-    .overflow-scroll {
-        overflow-y: auto;
-    }
-</style>

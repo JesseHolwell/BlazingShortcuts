@@ -8,7 +8,8 @@ namespace BlazingShortcuts
         private void NotifyStateChanged() => OnChange?.Invoke();
 
         public bool Theme { get; private set; }
-        public bool Fullscreen { get; private set; }
+        public bool Fullscreen => false;
+        //public bool Fullscreen => DisplayState == DisplayState.ShortcutsFull;
         public bool Configure { get; private set; }
         public bool ShowInfo { get; private set; }
         public bool Searching { get; private set; }
@@ -35,12 +36,12 @@ namespace BlazingShortcuts
             return Theme;
         }
 
-        public bool ToggleFullscreen(bool? fullscreen = null)
-        {
-            Fullscreen = fullscreen ?? !Fullscreen;
-            NotifyStateChanged();
-            return Fullscreen;
-        }
+        //public bool ToggleFullscreen(bool? fullscreen = null)
+        //{
+        //    Fullscreen = fullscreen ?? !Fullscreen;
+        //    NotifyStateChanged();
+        //    return Fullscreen;
+        //}
 
         public bool ToggleConfigure(bool? configure = null)
         {

@@ -34,6 +34,7 @@ namespace BlazingShortcuts.Models
         public int current => Convert.ToInt32(currentState);
 
         public bool IsFull => Keys1?.IsFull == true && Keys2?.IsFull == true;
+        public bool IsEmpty => Keys1?.IsEmpty == true && Keys2?.IsEmpty == true;
 
         public void Reset()
         {
@@ -91,6 +92,7 @@ namespace BlazingShortcuts.Models
         public bool Shift { get; set; }
 
         public bool IsFull => !string.IsNullOrEmpty(Key);
+        public bool IsEmpty => string.IsNullOrEmpty(Key);
 
         public override string ToString()
         {

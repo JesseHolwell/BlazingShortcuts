@@ -30,19 +30,12 @@
 
 @code {
 
-    //public bool isCtrlDown = false;
-    //public bool isShiftDown = false;
-    //public bool isAltDown = false;
-
-    //public Keys keys = new Keys();
-    //public Keys keys2 = new Keys();
-    //public Shortcut shortcut = new Shortcut();
-
     protected override async Task OnInitializedAsync()
     {
-        //keysCurrent = 0;
         model.Keyboard.ResetAvailable();
         model.Keyboard.ResetPressed();
+
+        await model.UpdateViewModel(model.Shortcut);
     }
 
     public async Task KeyDown(KeyboardEventArgs args)
@@ -60,22 +53,19 @@
         //{
         if (args.CtrlKey)
         {
-            model.Shortcut.ShortcutKeys[model.Shortcut.current].Control = true;
-            model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Control = model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
         }
         else if (args.AltKey)
         {
-            model.Shortcut.ShortcutKeys[model.Shortcut.current].Alt = true;
-            model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Alt = model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
         }
         else if (args.ShiftKey)
         {
-            model.Shortcut.ShortcutKeys[model.Shortcut.current].Shift = true;
-            model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Shift = model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
         }
         //}
-
-        if (args.Key != "Control" && args.Key != "Shift" && args.Key != "Alt")
+        else
+        //if (args.Key != "Control" && args.Key != "Shift" && args.Key != "Alt")
         {
             model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = args.Key.ToUpper();
 
@@ -112,25 +102,14 @@
 
     private async Task ClearKeys()
     {
-        //keys = new Keys();
-        //shortcut = new Shortcut();
-
-        //isCtrlDown = false;
-        //isAltDown = false;
-        //isShiftDown = false;
-
         model.Shortcut.currentState = false;
 
         model.Shortcut.Reset();
         model.Keyboard.ResetAvailable();
         model.Keyboard.ResetPressed();
 
-        //await UpdateViewModel(model.Shortcut);
         AppState.IsSearching(false);
         await model.UpdateViewModel(model.Shortcut);
-        //AppState.IsSearching(!string.IsNullOrEmpty(model.Shortcut.ToString()));
-
-
         this.StateHasChanged();
 
     }

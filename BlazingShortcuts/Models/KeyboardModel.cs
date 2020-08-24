@@ -186,9 +186,9 @@ namespace BlazingShortcuts.Models
         Up,
         [Description("<")]
         Left,
-        [Description(">")]
-        Down,
         [Description("v")]
+        Down,
+        [Description(">")]
         Right,
 
         Hidden,

@@ -1,4 +1,5 @@
 ﻿@namespace Components
+@inject AppState AppState
 @functions{
     [CascadingParameter(Name = "ViewModel")] protected VSShortcutsViewModel model { get; set; }
 }
@@ -15,23 +16,29 @@
     [Parameter]
     public string Classes { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        model.Keyboard.ResetAvailable();
+        model.Keyboard.ResetPressed();
+    }
+
     public async Task KeyPress(BlazingShortcuts.Models.KeyboardKeyModel key)
     {
-        key.Press();
-
         if (key.Key == Key.Escape)
         {
-            model.Shortcut.Reset();
-            model.Keyboard.ResetAvailable();
-            model.Keyboard.ResetPressed();
+            await ClearKeys();
+            return;
         }
 
+        if (model.Shortcut.IsFull)
+            model.Shortcut.Reset();
+
         if (key.Key == Key.Ctrl)
-            model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Control = model.Shortcut.IsCtrlDown = !model.Shortcut.IsCtrlDown;
         else if (key.Key == Key.Alt)
-            model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Alt = model.Shortcut.IsAltDown = !model.Shortcut.IsAltDown;
         else if (key.Key == Key.Shift)
-            model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
+            model.Shortcut.ShortcutKeys[model.Shortcut.current].Shift = model.Shortcut.IsShiftDown = !model.Shortcut.IsShiftDown;
         else
         {
             model.Shortcut.ShortcutKeys[model.Shortcut.current].Key = key.Key.ToString().ToUpper();
@@ -45,6 +52,25 @@
         }
 
         await model.UpdateViewModel(model.Shortcut);
+
+        key.Press();
+
+        AppState.IsSearching(true);
+
         this.StateHasChanged();
+    }
+
+    private async Task ClearKeys()
+    {
+        model.Shortcut.currentState = false;
+
+        model.Shortcut.Reset();
+        model.Keyboard.ResetAvailable();
+        model.Keyboard.ResetPressed();
+
+        AppState.IsSearching(false);
+        await model.UpdateViewModel(model.Shortcut);
+        this.StateHasChanged();
+
     }
 }
